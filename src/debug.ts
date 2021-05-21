@@ -1,11 +1,50 @@
-const NODE_ENV : string | undefined = process.env.NODE_ENV;
+type PrintFunc = (...args: any[]) => void;
+type LevelFunc = (levels: DebugLevel[]) => void;
 
-type DebugFunc = (...args: any[]) => void;
+enum DebugLevel {
+	trace = 'TRACE',
+	info = 'INFO',
+	warn = 'WARN',
+	error = 'ERROR'
+};
+type DebugLevelKey = keyof typeof DebugLevel;
 
-export let debug: DebugFunc;
+namespace Printers {
+	export function log(...args: any[]): void {
+		console.log(...args);
+	}
 
-if (NODE_ENV == 'debug') {
-	debug = console.log;
-} else {
-	debug = () => {}
+	export function nop(...args: any[]): void {}
 }
+
+interface Debug {
+	trace: PrintFunc;
+	info:  PrintFunc;
+	warn:  PrintFunc;
+	error: PrintFunc;
+	LEVEL: typeof DebugLevel;
+	setLevel: LevelFunc;
+}
+
+function setLevel(levels: DebugLevel[]): void {
+	let l: DebugLevelKey;
+	for (l in DebugLevel) {
+		if (levels.includes(DebugLevel[l])) {
+			debug[l] = Printers.log.bind(null, `[${DebugLevel[l]}]`);
+		} else {
+			debug[l] = Printers.nop;
+		}
+	}
+};
+
+const debug: Debug = {
+	trace: Printers.nop,
+	info: Printers.nop,
+	warn: Printers.nop,
+	error: Printers.nop,
+	LEVEL: DebugLevel,
+	setLevel
+};
+setLevel([DebugLevel.trace, DebugLevel.info , DebugLevel.warn , DebugLevel.error]);
+
+export default debug;
