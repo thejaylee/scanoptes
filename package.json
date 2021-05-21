@@ -4,21 +4,24 @@
   "description": "price checker",
   "main": "pricy.js",
   "dependencies": {
-    "better-sqlite3": "^7.4.0",
-    "node-notifier": "^9.0.1"
+    "better-sqlite3": "^7.4.0"
   },
   "devDependencies": {
     "@tsconfig/node14": "^1.0.0",
     "@types/node": "^15.3.0",
     "npm-watch": "^0.9.0",
+    "source-map-support": "^0.5.19",
     "tsc-watch": "^4.2.9"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc-watch": "tsc-watch --compiler /usr/bin/tsc --outDir build",
+	"build": "tsc --outDir build",
     "watch": "npm-watch",
-    "debug": "NODE_ENV=debug node build/pricy.js",
-    "start": "node build/pricy.js"
+    "debug-monitor": "NODE_ENV=debug node -r source-map-support/register build/pricy-monitor.js",
+    "start-monitor": "node build/pricy-monitor.js",
+    "debug-notify": "NODE_ENV=debug node -r source-map-support/register build/pricy-notifier.js",
+    "start-notify": "node build/pricy-notifier.js"
   },
   "watch": {
     "start": "build/*.js"
