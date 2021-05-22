@@ -1,6 +1,3 @@
-type PrintFunc = (...args: any[]) => void;
-type LevelFunc = (levels: DebugLevel[]) => void;
-
 enum DebugLevel {
 	trace = 'TRACE',
 	info = 'INFO',
@@ -16,6 +13,7 @@ namespace Printers {
 
 	export function nop(...args: any[]): void {}
 }
+type PrintFunc = typeof Printers.log;
 
 interface Debug {
 	trace: PrintFunc;
@@ -23,7 +21,7 @@ interface Debug {
 	warn:  PrintFunc;
 	error: PrintFunc;
 	LEVEL: typeof DebugLevel;
-	setLevel: LevelFunc;
+	setLevel: typeof setLevel;
 }
 
 function setLevel(levels: DebugLevel[]): void {
