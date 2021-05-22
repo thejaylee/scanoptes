@@ -3,10 +3,10 @@
   "type": "module",
   "version": "1.0.0",
   "description": "price checker",
-  "main": "pricy.js",
+  "main": "pricy-monitor.js",
   "dependencies": {
     "better-sqlite3": "^7.4.0",
-    "node-html-parser": "^3.3.0"
+    "cheerio": "^1.0.0-rc.9"
   },
   "devDependencies": {
     "@tsconfig/node14": "^1.0.0",

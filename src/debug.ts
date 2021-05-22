@@ -1,4 +1,4 @@
-enum DebugLevel {
+export enum DebugLevel {
 	trace = 'TRACE',
 	info = 'INFO',
 	warn = 'WARN',
