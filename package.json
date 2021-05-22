@@ -1,10 +1,12 @@
 {
   "name": "pricy",
+  "type": "module",
   "version": "1.0.0",
   "description": "price checker",
   "main": "pricy.js",
   "dependencies": {
-    "better-sqlite3": "^7.4.0"
+    "better-sqlite3": "^7.4.0",
+    "node-html-parser": "^3.3.0"
   },
   "devDependencies": {
     "@tsconfig/node14": "^1.0.0",
@@ -15,8 +17,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "tsc-watch": "tsc-watch --compiler /usr/bin/tsc --outDir build",
-	"build": "tsc --outDir build",
+    "tsc-watch": "tsc-watch --compiler /usr/bin/tsc",
+    "build": "tsc --outDir build",
     "watch": "npm-watch",
     "debug-monitor": "NODE_ENV=debug node -r source-map-support/register build/pricy-monitor.js",
     "start-monitor": "node build/pricy-monitor.js",

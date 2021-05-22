@@ -4,6 +4,10 @@
   "exclude": ["node_modules", "**/*.spec.ts"],
   "compilerOptions": {
 	  "alwaysStrict": true,
-	  "sourceMap": true
+	  "module": "esnext",
+	  "target": "esnext",
+	  "moduleResolution": "node",
+	  "sourceMap": true,
+	  "outDir": "build"
   }
 }
