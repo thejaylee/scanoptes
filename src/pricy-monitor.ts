@@ -4,10 +4,12 @@ import * as cheerio from 'cheerio';
 
 import debug, { DebugLevel } from './debug.js';
 import { notify } from './notifier.js';
-import { PromiseFunc, WatcherDefinition } from './types.js';
+import { PromiseFunc, WatchDefinition } from './types.js';
+import { load_watches } from './watch_loader.js';
 
 process.on('unhandledRejection', console.log);
 
+const DEFAULT_WATCH_FILE = 'watches.json'
 const NODE_ENV : string | undefined = process.env.NODE_ENV;
 
 let debug_levels: DebugLevel[] = [debug.LEVEL.warn, debug.LEVEL.error];
@@ -18,46 +20,21 @@ switch (NODE_ENV) {
 }
 debug.setLevel(debug_levels);
 
+const watch_file: string = process.argv[2] ?? DEFAULT_WATCH_FILE;
+const watches: WatchDefinition[] = load_watches(watch_file);
+debug.trace(watches);
+
 debug.info('starting up');
+process_watches(watches);
+debug.info('ending');
 
-let sel1224g: WatcherDefinition = {
-	url: 'https://www.amazon.ca/Sony-SEL1224G-12-24mm-Fixed-Camera/dp/B072J4B6WS/',
-	and: [{
-		element: '.olp-text-box',
-		includes: 'New & Used',
-	},{
-		element: '.olp-text-box .a-size-base',
-		lessThan: 1700,
-	}]
-}
-
-process_watcher(sel1224g);
-
-async function process_watcher(watcher: WatcherDefinition): Promise<void> {
-	let res_data: Buffer;
-	res_data = await make_request(watcher.url);
-	let $root = cheerio.load(res_data.toString());
-	debug.info(check_page($root, watcher));
-}
-
-function check_page($root: any, watcher: WatcherDefinition): boolean {
-	for (let w of watcher.and ?? []) {
-		const $el = $root(w.element);
-		if (!$el)
-			throw Error('could not find element');
-
-		let text: string = w.caseSensitive ? $el.text() : $el.text().toLowerCase();
-		let num: number = Number(text.replace(/[^0-9\.]/g, ''));
-		const includes: string | undefined = w.caseSensitive ? w.includes : w.includes?.toLowerCase();
-
-		if (includes && !text.includes(includes))
-			return false;
-		if (w.match && !text.match(new RegExp(w.match)))
-			return false;
-		if (w.lessThan && num >= w.lessThan)
-			return false;
+async function process_watches(watches: WatchDefinition[]): Promise<void> {
+	for (const watch of watches) {
+		let res_data: Buffer;
+		res_data = await make_request(watch.url);
+		let $root = cheerio.load(res_data.toString());
+		debug.info(check_page($root, watch));
 	}
-	return true;
 }
 
 function make_request(url: string): Promise<Buffer> {
@@ -85,4 +62,22 @@ function make_request(url: string): Promise<Buffer> {
 	});
 }
 
-debug.info('ending');
+function check_page($root: any, watch: WatchDefinition): boolean {
+	for (let w of watch.and ?? []) {
+		const $el: cheerio.CheerioAPI = $root(w.element);
+		if (!$el)
+			throw Error('could not find element');
+
+		let text: string = w.caseSensitive ? $el.text() : $el.text().toLowerCase();
+		let num: number = Number(text.replace(/[^0-9\.]/g, ''));
+		const includes: string | undefined = w.caseSensitive ? w.includes : w.includes?.toLowerCase();
+
+		if (includes && !text.includes(includes))
+			return false;
+		if (w.match && !text.match(w.match))
+			return false;
+		if (w.lessThan && num >= w.lessThan)
+			return false;
+	}
+	return true;
+}

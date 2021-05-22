@@ -15,15 +15,6 @@ namespace Printers {
 }
 type PrintFunc = typeof Printers.log;
 
-interface Debug {
-	trace: PrintFunc;
-	info:  PrintFunc;
-	warn:  PrintFunc;
-	error: PrintFunc;
-	LEVEL: typeof DebugLevel;
-	setLevel: typeof setLevel;
-}
-
 function setLevel(levels: DebugLevel[]): void {
 	let l: DebugLevelKey;
 	for (l in DebugLevel) {
@@ -34,6 +25,15 @@ function setLevel(levels: DebugLevel[]): void {
 		}
 	}
 };
+
+interface Debug {
+	trace: PrintFunc;
+	info:  PrintFunc;
+	warn:  PrintFunc;
+	error: PrintFunc;
+	LEVEL: typeof DebugLevel;
+	setLevel: typeof setLevel;
+}
 
 const debug: Debug = {
 	trace: Printers.nop,

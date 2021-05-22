@@ -1,18 +1,17 @@
 export type PromiseFunc = (...args: any[]) => void;
 
-//type ChildWatcherDefinitions = Omit<WatcherDefinition, 'url'>[];
-
-interface WatchItem {
+export interface WatchItem {
 	element: string;
+	anyChange?: boolean;
 	caseSensitive?: boolean;
 	parseNumber?: boolean;
 	includes?: string;
-	match?: string;
+	match?: RegExp;
 	lessThan?: number;
-	anyChange?: boolean;
 }
 
-export interface WatcherDefinition {
+export interface WatchDefinition {
+	name: string;
 	url: string;
 	and?: WatchItem[];
 	or?: WatchItem[];
