@@ -16,16 +16,16 @@ export function load_watches(filepath: string): WatchDefinition[] {
 		let w: WatchDefinition = {
 			name: String(o.name),
 			url: String(o.url),
-			and: [],
-			or: [],
+			all: [],
+			any: [],
 		};
-		for (let j of o.and ?? []) {
+		for (let j of o.all ?? []) {
 			let wi: WatchItem = json2item(j);
-			w.and?.push(wi);
+			w.all?.push(wi);
 		}
-		for (let j of o.or ?? []) {
+		for (let j of o.any ?? []) {
 			let wi: WatchItem = json2item(j);
-			w.or?.push(wi);
+			w.any?.push(wi);
 		}
 		watches.push(w);
 	}
@@ -42,8 +42,6 @@ function json2item(j: JsonObj): WatchItem {
 		wi.anyChange = Boolean(j.anyChange);
 	if (j.caseSensitive !== undefined)
 		wi.caseSensitive = Boolean(j.caseSensitive);
-	if (j.parseNumber !== undefined)
-		wi.parseNumber = Boolean(j.parseNumber);
 	if (j.lessThan !== undefined)
 		wi.lessThan = Number(j.lessThan);
 	if (j.includes !== undefined)

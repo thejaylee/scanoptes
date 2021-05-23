@@ -4,7 +4,6 @@ export interface WatchItem {
 	element: string;
 	anyChange?: boolean;
 	caseSensitive?: boolean;
-	parseNumber?: boolean;
 	includes?: string;
 	match?: RegExp;
 	lessThan?: number;
@@ -13,6 +12,6 @@ export interface WatchItem {
 export interface WatchDefinition {
 	name: string;
 	url: string;
-	and?: WatchItem[];
-	or?: WatchItem[];
+	all?: WatchItem[];
+	any?: WatchItem[];
 }

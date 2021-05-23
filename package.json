@@ -25,6 +25,10 @@
     "debug-notify": "NODE_ENV=debug node -r source-map-support/register build/pricy-notifier.js",
     "start-notify": "node build/pricy-notifier.js"
   },
+  "config": {
+    "watches_file": "watches.json",
+    "scan_interval": 600
+  },
   "watch": {
     "start": "build/*.js"
   },
