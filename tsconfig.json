@@ -2,6 +2,7 @@
   "extends": "@tsconfig/node14/tsconfig.json",
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"],
+  "types": "node",
   "compilerOptions": {
 	  "alwaysStrict": true,
 	  "module": "esnext",
