@@ -3,10 +3,11 @@ import * as cheerio from 'cheerio';
 import { Cheerio, Node } from 'cheerio';
 
 import debug from './debug.js';
-import { PromiseFunc } from './types.js';
+import { Pojo, PromiseFunc } from './types.js';
 
 export class WebDocument {
  	readonly url: string;
+	cookie?: string;
 	#buffer: Buffer | undefined;
 	#$doc: cheerio.CheerioAPI | undefined;
 
@@ -16,11 +17,11 @@ export class WebDocument {
 
 	public load(): Promise<WebDocument> {
 		return new Promise((resolve: PromiseFunc, reject: PromiseFunc): void => {
-			https.get(this.url, {
-				headers: {
-					'accept-encoding': 'identity',
-				},
-			})
+			debug.trace(`loading ${this.url}`);
+			const headers: Pojo = { 'accept-encoding': 'identity' };
+			if (this.cookie)
+				headers['cookie'] = this.cookie;
+			https.get(this.url, { headers })
 			.on('response', (response: any) => {
 				debug.trace(`${this.url} response data`);
 				let chunks: Buffer[] = [];

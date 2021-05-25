@@ -1,3 +1,7 @@
+import date from 'date-and-time';
+import chalk from 'chalk';
+import { ChalkFunction } from 'chalk';
+
 export enum DebugLevel {
 	trace = 'TRACE',
 	info = 'INFO',
@@ -5,10 +9,17 @@ export enum DebugLevel {
 	error = 'ERROR'
 };
 type DebugLevelKey = keyof typeof DebugLevel;
+const DebugLevelColors: Record<DebugLevel, ChalkFunction> = {
+	[DebugLevel.trace]: chalk.white,
+	[DebugLevel.info]: chalk.cyan,
+	[DebugLevel.warn]: chalk.ansi256(208),
+	[DebugLevel.error]: chalk.redBright,
+}
 
 namespace Printers {
 	export function log(...args: any[]): void {
-		console.log(...args);
+		const now = new Date();
+		console.log(`[${date.format(now, 'HH:mm:ss.S')}]`, ...args);
 	}
 
 	export function nop(...args: any[]): void {}
@@ -16,12 +27,13 @@ namespace Printers {
 type PrintFunc = typeof Printers.log;
 
 function setLevel(levels: DebugLevel[]): void {
-	let l: DebugLevelKey;
-	for (l in DebugLevel) {
-		if (levels.includes(DebugLevel[l])) {
-			debug[l] = Printers.log.bind(null, `[${DebugLevel[l]}]`);
+	let k: DebugLevelKey;
+	for (k in DebugLevel) {
+		const level: DebugLevel = DebugLevel[k];
+		if (levels.includes(level)) {
+			debug[k] = Printers.log.bind(null, `[${DebugLevelColors[level](level)}]`);
 		} else {
-			debug[l] = Printers.nop;
+			debug[k] = Printers.nop;
 		}
 	}
 };
