@@ -1,13 +1,18 @@
 {
   "name": "pricy",
+  "type": "module",
   "version": "1.0.0",
   "description": "price checker",
-  "main": "pricy.js",
+  "main": "pricy-watcher.js",
   "dependencies": {
-    "better-sqlite3": "^7.4.0"
+    "better-sqlite3": "^7.4.0",
+    "chalk": "^3.0.0",
+    "cheerio": "^1.0.0-rc.9",
+    "date-and-time": "^1.0.0"
   },
   "devDependencies": {
     "@tsconfig/node14": "^1.0.0",
+    "@types/date-and-time": "^0.13.0",
     "@types/node": "^15.3.0",
     "npm-watch": "^0.9.0",
     "source-map-support": "^0.5.19",
@@ -15,13 +20,17 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "tsc-watch": "tsc-watch --compiler /usr/bin/tsc --outDir build",
-	"build": "tsc --outDir build",
+    "tsc-watch": "tsc-watch --compiler /usr/bin/tsc",
+    "build": "tsc --outDir build",
     "watch": "npm-watch",
-    "debug-monitor": "NODE_ENV=debug node -r source-map-support/register build/pricy-monitor.js",
-    "start-monitor": "node build/pricy-monitor.js",
+    "debug-watcher": "NODE_ENV=debug node -r source-map-support/register build/pricy-watcher.js",
+    "start-watcher": "node build/pricy-watcher.js",
     "debug-notify": "NODE_ENV=debug node -r source-map-support/register build/pricy-notifier.js",
     "start-notify": "node build/pricy-notifier.js"
+  },
+  "config": {
+    "watches_file": "watches.json",
+    "scan_interval": 600
   },
   "watch": {
     "start": "build/*.js"

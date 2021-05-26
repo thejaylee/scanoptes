@@ -2,8 +2,13 @@
   "extends": "@tsconfig/node14/tsconfig.json",
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"],
+  "types": "node",
   "compilerOptions": {
 	  "alwaysStrict": true,
-	  "sourceMap": true
+	  "module": "esnext",
+	  "target": "esnext",
+	  "moduleResolution": "node",
+	  "sourceMap": true,
+	  "outDir": "build"
   }
 }
