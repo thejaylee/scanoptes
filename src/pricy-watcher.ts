@@ -19,7 +19,6 @@ switch (NODE_ENV) {
 }
 debug.setLevel(debug_levels);
 
-
 debug.trace(process.env.npm_package_config_watches_file);
 debug.trace(process.env.npm_package_config_scan_interval);
 const watchFile: string = process.argv[2] ?? DEFAULT_WATCH_FILE;

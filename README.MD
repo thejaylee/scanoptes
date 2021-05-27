@@ -16,7 +16,7 @@ Page changes are watched via a watch definition file (default: watches.json) wil
 
     // URL of the page to watch,
     // https only and "https://" is required
-    "url": "https://google.com",
+    "url": "https://www.google.com",
 
     // cookie header to send
     "cookie": "",
@@ -62,3 +62,15 @@ Page changes are watched via a watch definition file (default: watches.json) wil
     "any?": [{}]
 }]
 ```
+
+## Certificates
+Communication between the watcher and notifier is via HTTPS and the client requires a server signed cert
+
+#### Server keys/certificates
+Generate the server key and cert
+`openssl req -x509 -newkey rsa:4096 -keyout server_key.pem -out server_cert.pem -nodes -days 365 -subj "/CN=localhost/O=Pricy Server"`
+#### Client keys/certificates
+Generate the client key and cert
+`openssl req -newkey rsa:4096 -keyout client_key.pem -out client_csr.pem -nodes -days 365 -subj "/CN=Pricy\ Client"`
+Sign the client cert with the server cert
+`openssl x509 -req -in client_csr.pem -CA server_cert.pem -CAkey server_key.pem -out client_cert.pem -set_serial 01 -days 365`

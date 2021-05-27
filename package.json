@@ -5,13 +5,15 @@
   "description": "price checker",
   "main": "build/pricy-watcher.js",
   "dependencies": {
+    "@types/node-notifier": "^8.0.0",
     "better-sqlite3": "^7.4.0",
     "chalk": "^3.0.0",
     "cheerio": "^1.0.0-rc.9",
-    "date-and-time": "^1.0.0"
+    "date-and-time": "^1.0.0",
+    "node-notifier": "^10.0.0"
   },
   "devDependencies": {
-    "@tsconfig/node14": "^1.0.0",
+    "@tsconfig/node16": "^1.0.1",
     "@types/date-and-time": "^0.13.0",
     "@types/node": "^15.3.0",
     "npm-watch": "^0.9.0",
@@ -30,7 +32,10 @@
   },
   "config": {
     "watches_file": "watches.json",
-    "scan_interval": 600
+    "client_key_file": "client_key.pem",
+    "server_cert_file": "server_cert.pem",
+    "server_key_file": "server_key.pem",
+    "comms_port": 8000
   },
   "watch": {
     "start": "build/*.js"
