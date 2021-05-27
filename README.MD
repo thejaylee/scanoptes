@@ -53,9 +53,6 @@ Page changes are watched via a watch definition file (default: watches.json) wil
             // a string Regex to match against, along with Regex flags
             "match?": [ "regex", "flags" ],
 
-            // track and notify if the text of this node changes
-            "shouldTrack?": false,
-
             // if the Number() parsed text of the node evaluates to less than this value
             "lessThan?": 1000.00,
         }
