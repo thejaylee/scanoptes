@@ -48,32 +48,37 @@ export class NodeInspector {
 	selector: string;
 	context: NodeInspectorContext;
 	name?: string;
-	anyChange?: boolean;
-	caseSensitive?: boolean;
-	includes?: string;
-	match?: RegExp;
-	lessThan?: number;
-	#nodeHtml?: string;
-	#nodeText?: string;
+    condition: {
+        anyChange?: boolean;
+        caseSensitive?: boolean;
+        includes?: string;
+        match?: RegExp;
+        lessThan?: number;
+    }
+    #nodeHtml?: string;
+    #nodeText?: string;
 
 	constructor(selector: string, context: NodeInspectorContext = NodeInspectorContext.TEXT) {
 		this.selector = selector;
 		this.context = context;
+        this.condition = {};
 	}
 
-	public static fromDefinition(niDef: NodeInspectorDefinition): NodeInspector {
-		const ni: NodeInspector = new NodeInspector(niDef.selector, NodeInspectorContext[niDef.context]);
+	public static fromDefinition(definition: NodeInspectorDefinition): NodeInspector {
+		const ni: NodeInspector = new NodeInspector(definition.selector, NodeInspectorContext[definition.context]);
 
-		if (niDef.name !== undefined)
-			ni.name = String(niDef.name);
-		if (niDef.caseSensitive !== undefined)
-			ni.caseSensitive = Boolean(niDef.caseSensitive);
-		if (niDef.includes !== undefined)
-			ni.includes = String(niDef.includes);
-		if (niDef.match !== undefined)
-			ni.match = new RegExp(niDef.match[0], niDef.match[1]);
-		if (niDef.lessThan !== undefined)
-			ni.lessThan = Number(niDef.lessThan);
+		if (definition.name !== undefined)
+			ni.name = String(definition.name);
+		if (definition.condition.caseSensitive !== undefined)
+			ni.condition.caseSensitive = Boolean(definition.condition.caseSensitive);
+		if (definition.condition.anyChange !== undefined)
+			ni.condition.anyChange = Boolean(definition.condition.anyChange);
+		if (definition.condition.includes !== undefined)
+            ni.condition.includes = String(definition.condition.includes);
+		if (definition.condition.match !== undefined)
+            ni.condition.match = new RegExp(definition.condition.match[0], definition.condition.match[1]);
+		if (definition.condition.lessThan !== undefined)
+			ni.condition.lessThan = Number(definition.condition.lessThan);
 
 		return ni;
 	}
@@ -90,7 +95,7 @@ export class NodeInspector {
 		this.#nodeText = $el.text();
 		switch (this.context) {
 			case NodeInspectorContext.TEXT:
-				evaluatee = this.caseSensitive ? this.#nodeText : this.#nodeText.toLowerCase();
+				evaluatee = this.condition.caseSensitive ? this.#nodeText : this.#nodeText.toLowerCase();
 				break;
 
 			case NodeInspectorContext.HTML:
@@ -99,13 +104,13 @@ export class NodeInspector {
 		}
 
 		let num: number = Number(evaluatee.replace(/[^0-9\.]/g, ''));
-		const includes: string | undefined = this.caseSensitive ? this.includes : this.includes?.toLowerCase();
+		const includes: string | undefined = this.condition.caseSensitive ? this.condition.includes : this.condition.includes?.toLowerCase();
 
 		if (includes && !evaluatee.includes(includes))
 			return false;
-		if (this.match && !evaluatee.match(this.match))
+		if (this.condition.match && !evaluatee.match(this.condition.match))
 			return false;
-		if (this.lessThan && num >= this.lessThan)
+		if (this.condition.lessThan && num >= this.condition.lessThan)
 			return false;
 
 		return true;

@@ -9,7 +9,7 @@ Pricy is designed so that the watcher can be rnu as a daemon out of the way on s
 
 Page changes are watched via a watch definition file (default: watches.json) will the following structure (keys ending with "?" denote optional):
 
-```json
+```javascript
 [{
     // The watch name,
     "name": "google inspector",
@@ -37,20 +37,28 @@ Page changes are watched via a watch definition file (default: watches.json) wil
         // a name of the item to watch
         "name?": "sample",
 
-        // case sensitive comparisons. this only applies to `includes` when context is TEXT
-        "caseSensitive?": false,
+        // various conditions to test for
+        "condition": {
 
-        // must include the text
-        "includes?": "Price",
+            // monitor for any change in either the html or text
+            // when set to true this will ignore all other conditions
+            "anyChange?": false,
 
-        // a string Regex to match against, along with Regex flags
-        "match?": [ "regex", "flags" ],
+            // case sensitive comparisons. this only applies to `includes` when context is TEXT
+            "caseSensitive?": false,
 
-        // track and notify if the text of this node changes
-        "shouldTrack?": false,
+            // must include the text
+            "includes?": "Price",
 
-        // if the Number() parsed text of the node evaluates to less than this value
-        "lessThan?": 1000.00,
+            // a string Regex to match against, along with Regex flags
+            "match?": [ "regex", "flags" ],
+
+            // track and notify if the text of this node changes
+            "shouldTrack?": false,
+
+            // if the Number() parsed text of the node evaluates to less than this value
+            "lessThan?": 1000.00,
+        }
     }],
 
     // same structure as all but any of these may pass for the watch to pass
