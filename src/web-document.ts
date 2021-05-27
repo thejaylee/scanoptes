@@ -6,7 +6,7 @@ import debug from './debug.js';
 import { Pojo, PromiseFunc } from './types.js';
 
 export class WebDocument {
- 	readonly url: string;
+	readonly url: string;
 	cookie?: string;
 	#buffer: Buffer | undefined;
 	#$doc: cheerio.CheerioAPI | undefined;

@@ -15,9 +15,11 @@ export interface NodeInspectorDefinition {
 	selector: string;
 	context: "TEXT" | "HTML";
 	name?: string;
-	anyChange?: string;
-	caseSensitive?: string;
-	includes?: string;
-	match?: Array<string>[2];
-	lessThan?: number;
+	condition: {
+		anyChange?: string;
+		caseSensitive?: string;
+		includes?: string;
+		match?: Array<string>[2];
+		lessThan?: number;
+	}
 }

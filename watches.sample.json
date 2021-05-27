@@ -1,0 +1,9 @@
+[{
+	"name": "Google Logo Monitor",
+	"url": "https://www.google.com",
+	"interval": 600,
+	"all": [{
+		"selector": "#hplogo",
+		"anyChange": true
+	}]
+}]
