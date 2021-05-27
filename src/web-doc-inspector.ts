@@ -16,12 +16,12 @@ export class WebDocumentInspector {
 		this.#document = document;
 	}
 
-    public loadNodeInspectorDefinitions(all?: NodeInspectorDefinition[], any?: NodeInspectorDefinition[]): void {
+	public loadNodeInspectorDefinitions(all?: NodeInspectorDefinition[], any?: NodeInspectorDefinition[]): void {
 		for (let d of all ?? [])
 			this.all.push(NodeInspector.fromDefinition(d));
 		for (let d of any ?? [])
 			this.any.push(NodeInspector.fromDefinition(d));
-    }
+	}
 
 	public inspect(): boolean {
 		debug.info(`inspecting ${this.#document.url}`);
@@ -48,20 +48,20 @@ export class NodeInspector {
 	selector: string;
 	context: NodeInspectorContext;
 	name?: string;
-    condition: {
-        anyChange?: boolean;
-        caseSensitive?: boolean;
-        includes?: string;
-        match?: RegExp;
-        lessThan?: number;
-    }
-    #nodeHtml?: string;
-    #nodeText?: string;
+	condition: {
+		anyChange?: boolean;
+		caseSensitive?: boolean;
+		includes?: string;
+		match?: RegExp;
+		lessThan?: number;
+	}
+	#nodeHtml?: string;
+	#nodeText?: string;
 
 	constructor(selector: string, context: NodeInspectorContext = NodeInspectorContext.TEXT) {
 		this.selector = selector;
 		this.context = context;
-        this.condition = {};
+		this.condition = {};
 	}
 
 	public static fromDefinition(definition: NodeInspectorDefinition): NodeInspector {
@@ -74,9 +74,9 @@ export class NodeInspector {
 		if (definition.condition.anyChange !== undefined)
 			ni.condition.anyChange = Boolean(definition.condition.anyChange);
 		if (definition.condition.includes !== undefined)
-            ni.condition.includes = String(definition.condition.includes);
+			ni.condition.includes = String(definition.condition.includes);
 		if (definition.condition.match !== undefined)
-            ni.condition.match = new RegExp(definition.condition.match[0], definition.condition.match[1]);
+			ni.condition.match = new RegExp(definition.condition.match[0], definition.condition.match[1]);
 		if (definition.condition.lessThan !== undefined)
 			ni.condition.lessThan = Number(definition.condition.lessThan);
 
@@ -84,22 +84,31 @@ export class NodeInspector {
 	}
 
 	public inspect(document: WebDocument): boolean {
-        debug.trace(`inspecting node ${this.selector}`);
+		debug.trace(`inspecting node ${this.selector}`);
 		const $el: Cheerio<Node> | undefined = document.$(this.selector);
 		if (!$el)
 			throw Error('could not find element');
 
 		let evaluatee: string;
 
+		let oldHtml: string | undefined = this.#nodeHtml;
+		let oldText: string | undefined = this.#nodeText;
 		this.#nodeHtml = $el.html() ?? undefined;
 		this.#nodeText = $el.text();
+
 		switch (this.context) {
-			case NodeInspectorContext.TEXT:
-				evaluatee = this.condition.caseSensitive ? this.#nodeText : this.#nodeText.toLowerCase();
+			case NodeInspectorContext.HTML:
+				if (this.condition.anyChange)
+					return oldHtml !== undefined && this.#nodeHtml != oldHtml;
+
+				evaluatee = this.#nodeHtml ?? '';
 				break;
 
-			case NodeInspectorContext.HTML:
-				evaluatee = this.#nodeHtml ?? '';
+			case NodeInspectorContext.TEXT:
+				if (this.condition.anyChange)
+					return oldText !== undefined && this.#nodeText != oldText;
+
+				evaluatee = this.condition.caseSensitive ? this.#nodeText : this.#nodeText.toLowerCase();
 				break;
 		}
 

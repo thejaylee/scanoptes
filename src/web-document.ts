@@ -1,4 +1,5 @@
 import https from 'https';
+import http from 'http';
 import * as cheerio from 'cheerio';
 import { Cheerio, Node } from 'cheerio';
 
@@ -8,20 +9,30 @@ import { Pojo, PromiseFunc } from './types.js';
 export class WebDocument {
 	readonly url: string;
 	cookie?: string;
+	#requestLib: typeof http | typeof https;
 	#buffer: Buffer | undefined;
 	#$doc: cheerio.CheerioAPI | undefined;
 
 	constructor(url: string) {
 		this.url = url;
+		if (!url.match(/^https?:\/\//i))
+			throw new Error(`url "${url}" must begin with http:// or https://`);
+
+		if (url.match(/^http:/i))
+			this.#requestLib = http;
+		else
+			this.#requestLib = https;
 	}
 
 	public load(): Promise<WebDocument> {
 		return new Promise((resolve: PromiseFunc, reject: PromiseFunc): void => {
 			debug.trace(`loading ${this.url}`);
+
 			const headers: Pojo = { 'accept-encoding': 'identity' };
 			if (this.cookie)
 				headers['cookie'] = this.cookie;
-			https.get(this.url, { headers })
+
+			this.#requestLib.get(this.url, { headers })
 			.on('response', (response: any) => {
 				debug.trace(`${this.url} response data`);
 				let chunks: Buffer[] = [];
