@@ -3,7 +3,7 @@
   "type": "module",
   "version": "1.0.0",
   "description": "price checker",
-  "main": "pricy-watcher.js",
+  "main": "build/pricy-watcher.js",
   "dependencies": {
     "better-sqlite3": "^7.4.0",
     "chalk": "^3.0.0",
@@ -25,8 +25,8 @@
     "watch": "npm-watch",
     "debug-watcher": "NODE_ENV=debug node -r source-map-support/register build/pricy-watcher.js",
     "start-watcher": "node build/pricy-watcher.js",
-    "debug-notify": "NODE_ENV=debug node -r source-map-support/register build/pricy-notifier.js",
-    "start-notify": "node build/pricy-notifier.js"
+    "debug-notifier": "NODE_ENV=debug node -r source-map-support/register build/pricy-notifier.js",
+    "start-notifier": "node build/pricy-notifier.js"
   },
   "config": {
     "watches_file": "watches.json",
