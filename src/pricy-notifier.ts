@@ -5,6 +5,8 @@ import tls from 'tls';
 
 import debug, { DebugLevel } from './debug.js';
 import { MessageReceiver } from './messenger.js';
+import { Notifier } from './notifier.js';
+import { NotificationMessage } from './types.js';
 
 process.on('unhandledRejection', console.log);
 
@@ -31,35 +33,13 @@ interface TLSIncomingMessage extends http.IncomingMessage {
 }
 
 debug.info('starting pricy notifier');
+const notifier = new Notifier();
 const receiver: MessageReceiver = new MessageReceiver({
 	pemKey: fs.readFileSync(serverKeyFile),
 	pemCertificate: fs.readFileSync(serverCertFile),
 	port: serverPort
 });
+receiver.callback = (message: NotificationMessage): void => {
+	notifier.alertOnDesktop(message);
+}
 receiver.listen();
-
-
-//const options: {[k:string]: any} = {
-//	key: fs.readFileSync(serverKeyFile),
-//	cert: fs.readFileSync(serverCerFile),
-//	ca: fs.readFileSync(serverCerFile),
-//	requestCert: true,
-//	rejectUnauthorized: false,
-//};
-//
-//https.createServer(options, (req: http.IncomingMessage, res: http.ServerResponse): void => {
-//	const tlsreq = req as TLSIncomingMessage;
-//	debug.trace(`${tlsreq.client.authorized} request from ${req.socket.remoteAddress} for ${req.url}`, req.headers);
-//
-//	if (!tlsreq.client.authorized) {
-//		res.writeHead(401);
-//		res.end();
-//	} else {
-//		const data: Buffer = Buffer.from('{"foo":"bar"}\n');
-//		res.writeHead(200, {
-//			'Content-Type': 'application/json',
-//			'Content-Length': data.length
-//		});
-//		res.end(data);
-//	}
-//}).listen(serverPort);

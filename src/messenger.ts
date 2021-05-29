@@ -4,8 +4,10 @@ import { IncomingMessage, ServerResponse } from 'http';
 import tls from 'tls';
 
 import debug from './debug.js';
-import { JsonObj } from './types.js';
+import { JsonObj, NotificationMessage, TypeValidator } from './types.js';
 
+// typescript complains about 'client' not existing
+// apparently it's not in the latest @types, either
 interface TLSIncomingMessage extends IncomingMessage {
     client: tls.TLSSocket;
 }
@@ -16,17 +18,12 @@ interface MessageReceiverOptions {
     port: number;
 }
 
-export interface NotificationMessage {
-    title: string;
-    body: string;
-}
-
 export type MessageCallback = (msg: NotificationMessage) => void;
 
-class JsonParseError extends Error {
+class JsonError extends Error {
     constructor(...params: any[]) {
         super(...params);
-        this.name = 'JSONParseError';
+        this.name = 'JSONError';
     }
 }
 
@@ -84,15 +81,18 @@ export class MessageReceiver {
                         chunks.push(data);
                     }).on('end', () => {
                         try {
-                            resolve(JSON.parse(Buffer.concat(chunks).toString()));
+                            const jsonobj: JsonObj = JSON.parse(Buffer.concat(chunks).toString());
+                            if (!TypeValidator.conformsToNotificationMessage(jsonobj))
+                                throw new Error();
+                            resolve(jsonobj as NotificationMessage);
                         } catch (error) {
-                            reject(new JsonParseError());
+                            reject(new JsonError());
                         }
                     });
                 }));
                 debug.trace('received message:', message);
             } catch (error) {
-                if (error instanceof JsonParseError) {
+                if (error instanceof JsonError) {
                     response.writeHead(400);
                     response.end('Bad JSON data');
                     return;
@@ -121,6 +121,10 @@ export class MessageReceiver {
     public loadPemKeyFile(filename: string): Buffer {
         this.pemKey = fs.readFileSync(filename);
         return this.pemKey;
+    }
+
+    set callback(func: MessageCallback) {
+        this.#callback = func;
     }
 
     get port(): number {

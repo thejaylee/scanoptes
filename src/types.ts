@@ -23,3 +23,25 @@ export interface NodeInspectorDefinition {
 		lessThan?: number;
 	}
 }
+
+export interface NotificationMessage {
+	title: string;
+	body: string;
+	url?: string;
+}
+
+export class TypeValidator {
+	public static conformsTo(obj: object, definition: {[k: string]: string}): boolean {
+		return Object.entries(obj).every(([key, value]): boolean => {
+			return key in definition && typeof(key) == definition[key];
+		})
+	}
+
+	public static conformsToNotificationMessage(obj: any) {
+		return TypeValidator.conformsTo(obj, {
+			title: 'string',
+			body: 'string',
+			url: 'string'
+		});
+	}
+}

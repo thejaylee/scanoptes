@@ -1,10 +1,9 @@
 import http from 'http';
 
 import debug, { DebugLevel } from './debug.js';
-import { notify } from './notifier.js';
 import { WatchDefinition } from './types.js';
 import { Watcher } from './watcher.js';
-import { loadJsonFileSync } from './util.js';
+import { load_json_file_sync } from './util.js';
 
 process.on('unhandledRejection', console.log);
 
@@ -22,7 +21,7 @@ debug.setLevel(debug_levels);
 debug.trace(process.env.npm_package_config_watches_file);
 debug.trace(process.env.npm_package_config_scan_interval);
 const watchFile: string = process.argv[2] ?? DEFAULT_WATCH_FILE;
-const defs: WatchDefinition[] = loadJsonFileSync(watchFile);
+const defs: WatchDefinition[] = load_json_file_sync(watchFile);
 let watchers: Watcher[] = defs.map((def: WatchDefinition): Watcher => {
 	return Watcher.fromDefinition(def);
 });
