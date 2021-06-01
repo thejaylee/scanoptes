@@ -4,6 +4,7 @@ export type Pojo = {[k:string]: any };
 
 export interface WatchDefinition {
 	name: string;
+	description?: string;
 	url: string;
 	interval: number;
 	cookie?: string;

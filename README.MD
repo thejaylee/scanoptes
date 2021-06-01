@@ -14,6 +14,9 @@ Page changes are watched via a watch definition file (default: watches.json) wil
     // The watch name,
     "name": "google inspector",
 
+    // A description
+    "description?": "the google homepage has changed",
+
     // URL of the page to watch,
     // https only and "https://" is required
     "url": "https://www.google.com",
@@ -71,6 +74,6 @@ Generate the server key and cert
 `openssl req -x509 -newkey rsa:4096 -keyout server_key.pem -out server_cert.pem -nodes -days 365 -subj "/CN=localhost/O=Pricy Server"`
 #### Client keys/certificates
 Generate the client key and cert
-`openssl req -newkey rsa:4096 -keyout client_key.pem -out client_csr.pem -nodes -days 365 -subj "/CN=Pricy\ Client"`
+`openssl req -newkey rsa:4096 -keyout client_key.pem -out client_csr.pem -nodes -days 365 -subj "/CN=localhost/O=Pricy\ Client"`
 Sign the client cert with the server cert
 `openssl x509 -req -in client_csr.pem -CA server_cert.pem -CAkey server_key.pem -out client_cert.pem -set_serial 01 -days 365`

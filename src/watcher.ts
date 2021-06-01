@@ -18,6 +18,7 @@ export class Watcher {
 	#onFail?: PromiseFunc;
 
 	name: string;
+	description?: string;
 	url: string;
 	interval: number;
 	stopOnPass: boolean;
@@ -35,6 +36,7 @@ export class Watcher {
 
 	public static fromDefinition(definition: WatchDefinition): Watcher {
 		let watcher: Watcher = new Watcher(definition.name, definition.url, definition.interval);
+		watcher.description = definition.description;
 		watcher.#inspector.loadNodeInspectorDefinitions(definition.all, definition.any);
 		return watcher;
 	}

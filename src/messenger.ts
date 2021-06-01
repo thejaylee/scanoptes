@@ -1,22 +1,8 @@
 import fs from 'fs';
-import https from 'https';
-import { IncomingMessage, ServerResponse } from 'http';
-import tls from 'tls';
+import http, { IncomingMessage, ServerResponse } from 'http';
 
 import debug from './debug.js';
 import { JsonObj, NotificationMessage, TypeValidator } from './types.js';
-
-// typescript complains about 'client' not existing
-// apparently it's not in the latest @types, either
-interface TLSIncomingMessage extends IncomingMessage {
-    client: tls.TLSSocket;
-}
-
-interface MessageReceiverOptions {
-    pemCertificate?: Buffer;
-    pemKey?: Buffer;
-    port: number;
-}
 
 export type MessageCallback = (msg: NotificationMessage) => void;
 
@@ -31,42 +17,16 @@ export class MessageReceiver {
     pemCertificate?: Buffer;
     pemKey?: Buffer;
     #callback?: MessageCallback;
-    #port: number;
-    #server?: https.Server;
+    #server?: http.Server;
 
-    constructor(options: MessageReceiverOptions) {
-        this.pemKey = options.pemKey;
-        this.pemCertificate = options.pemCertificate;
-        this.#port = options.port;
+    constructor() {
     }
 
-    public listen(port?: number) {
-        port = port ?? this.#port;
+    public listen(port: number) {
+        this.#server = http.createServer(async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
+            debug.trace(`[${request.method}] request from ${request.socket.remoteAddress} for ${request.url}`, request.headers);
 
-        if (!(this.pemKey instanceof Buffer))
-            throw new TypeError(`pemKey is not a Buffer`);
-        if (!(this.pemCertificate instanceof Buffer))
-            throw new TypeError(`pemCertificate is not a Buffer`);
-
-        const options: {[k:string]: any} = {
-            key: this.pemKey,
-            cert: this.pemCertificate,
-            ca: this.pemCertificate,
-            requestCert: true,
-            rejectUnauthorized: false,
-        };
-
-        this.#server = https.createServer(options, async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
-            const tlsRequest = request as TLSIncomingMessage;
-            debug.trace(`[${tlsRequest.method}] request from ${request.socket.remoteAddress} for ${request.url} auth: ${tlsRequest.client.authorized}`, request.headers);
-
-            if (!tlsRequest.client.authorized) {
-                response.writeHead(401);
-                response.end();
-                return;
-            }
-
-            if (tlsRequest.method !== 'POST') {
+            if (request.method !== 'POST') {
                 response.writeHead(405);
                 response.end();
                 return;
@@ -77,7 +37,7 @@ export class MessageReceiver {
                 debug.trace('reading message');
                 message = await (new Promise((resolve, reject): void => {
                     const chunks: Buffer[] = [];
-                    tlsRequest.on('data', (data: Buffer): void => {
+                    request.on('data', (data: Buffer): void => {
                         chunks.push(data);
                     }).on('end', () => {
                         try {
@@ -125,15 +85,5 @@ export class MessageReceiver {
 
     set callback(func: MessageCallback) {
         this.#callback = func;
-    }
-
-    get port(): number {
-        return this.#port;
-    }
-    set port(num: number) {
-        if (num < 0 || num > 0xffff)
-            throw new RangeError(`port number (${num}) is out of range 0 < num < 65536`);
-        if (!Number.isInteger(num))
-            throw new TypeError(`port number (${num}) is not an integer`);
     }
 }
