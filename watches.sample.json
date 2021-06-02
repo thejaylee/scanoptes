@@ -1,5 +1,6 @@
 [{
 	"name": "Google Logo Monitor",
+	"description": "Google changed their logo!",
 	"url": "https://www.google.com",
 	"interval": 600,
 	"all": [{

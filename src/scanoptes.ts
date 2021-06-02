@@ -19,6 +19,11 @@ log.setLevel(log_levels);
 
 log.trace('CLI arguments', argv);
 
+const start_notice: NotificationMessage = {
+	title: "Scanoptes Ready",
+	body: "Scanoptes has started up"
+}
+
 let notifier: Notifier;
 let cryptor: Cryptor;
 
@@ -26,12 +31,16 @@ switch (argv.command) {
 	case 'desktop':
 		notifier = new DesktopNotifier();
 		start_watching();
+		if (!argv.nostart)
+			notifier.notify(start_notice);
 		break;
 
 	case 'watcher':
 		cryptor = new Cryptor(new Aes256Cbc(Aes256Cbc.deriveKey(argv.password)));
 		notifier = new HttpPostNotifier(`http://${argv.host}:${argv.port}`, cryptor);
 		start_watching();
+		if (!argv.nostart)
+			notifier.notify(start_notice);
 		break;
 
 	case 'notifier':
@@ -61,7 +70,6 @@ function start_watching(): void {
 		w.sentinel?.then(onWatchSuccess);
 	}
 }
-
 
 function onWatchSuccess(watcher: Watcher): void {
 	log.info(`${watcher.name} passed!`);

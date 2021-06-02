@@ -38,7 +38,12 @@ options.all = {
 		default: false,
 		type: 'boolean',
 		describe: "verbose level output",
-	}
+	},
+	nostart: {
+		default: false,
+		type: 'boolean',
+		describe: 'supress the startup notification'
+	},
 };
 options.password = {
 	password: {
@@ -85,6 +90,7 @@ export interface Arguments {
 	f: string;
 	verbose: boolean;
 	v: boolean;
+	nostart: boolean;
 	host: string;
 	h: string;
 	password: string;
