@@ -1,6 +1,7 @@
 import fs from 'fs';
 import http from 'http';
 
+import { argv } from './arguments.js';
 import debug, { DebugLevel } from './debug.js';
 import { WatchDefinition } from './types.js';
 import { Watcher } from './watcher.js';
@@ -22,6 +23,9 @@ switch (NODE_ENV) {
 }
 debug.setLevel(debug_levels);
 
+debug.trace(argv);
+process.exit();
+
 debug.trace(process.env.npm_package_config_watches_file);
 debug.trace(process.env.npm_package_config_scan_interval);
 const watchFile: string = process.argv[2] ?? DEFAULT_WATCH_FILE;
@@ -31,10 +35,8 @@ let watchers: Watcher[] = defs.map((def: WatchDefinition): Watcher => {
 });
 debug.trace(watchers);
 
-debug.info('starting up');
 process_watches(watchers);
 const notifier = new Notifier();
-debug.info('ending');
 
 async function process_watches(watchers: Watcher[]): Promise<void> {
 	for (const w of watchers) {
