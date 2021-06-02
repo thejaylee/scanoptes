@@ -1,7 +1,9 @@
-# Pricy
-#### A basic tool to monitoring web pages for changes
+# Scanoptes
+#### A basic tool to watch web pages for changes
 
-Pricy is writen it can be run in one of three modes:
+(A portmanteau of "scan" and "panoptes")
+
+Scanoptes may be run in one of three modes:
 * Desktop
 * Watcher
 * Notifier
@@ -13,7 +15,7 @@ This mode will perform the watching and send out notifications
 This will listen for notifications from a Watcher and invoke desktop alerts
 
 ### Desktop mode
-This will run as both the watcher and notifier in one
+This will run as both the Watcher and Notifier in one
 
 
 ## Usage
@@ -31,7 +33,6 @@ Page changes are watched via a watch definition file (default: watches.json) wit
     "description?": "the google homepage has changed",
 
     // URL of the page to watch,
-    // https only and "https://" is required
     "url": "https://www.google.com",
 
     // cookie header to send

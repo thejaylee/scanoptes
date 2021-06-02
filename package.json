@@ -1,9 +1,9 @@
 {
-	"name": "pricy",
+	"name": "scanoptes",
 	"type": "module",
 	"version": "1.0.0",
 	"description": "price checker",
-	"main": "build/pricy.js",
+	"main": "build/scanoptes.js",
 	"dependencies": {
 		"@types/node-notifier": "^8.0.0",
 		"better-sqlite3": "^7.4.0",
@@ -27,12 +27,12 @@
 		"tsc-watch": "tsc-watch --compiler /usr/bin/tsc",
 		"build": "tsc --outDir build",
 		"watch": "npm-watch",
-		"debug-desktop": "node -r source-map-support/register build/pricy.js desktop -v",
-		"start-desktop": "node -r source-map-support/register build/pricy.js desktop",
-		"debug-watcher": "node -r source-map-support/register build/pricy.js watcher -v --password t3st3r",
-		"start-watcher": "node -r source-map-support/register build/pricy.js watcher",
-		"debug-notifier": "node -r source-map-support/register build/pricy.js notifier -v --password t3st3r",
-		"start-notifier": "node -r source-map-support/register build/pricy.js notifier"
+		"debug-desktop": "node -r source-map-support/register build/scanoptes.js desktop -v",
+		"start-desktop": "node -r source-map-support/register build/scanoptes.js desktop",
+		"debug-watcher": "node -r source-map-support/register build/scanoptes.js watcher -v --password t3st3r",
+		"start-watcher": "node -r source-map-support/register build/scanoptes.js watcher",
+		"debug-notifier": "node -r source-map-support/register build/scanoptes.js notifier -v --password t3st3r",
+		"start-notifier": "node -r source-map-support/register build/scanoptes.js notifier"
 	},
 	"watch": {
 		"start": "build/*.js"
