@@ -3,7 +3,7 @@ import http from 'http';
 import * as cheerio from 'cheerio';
 import { Cheerio, Node } from 'cheerio';
 
-import debug from './debug.js';
+import log from './log.js';
 import { Pojo, PromiseFunc } from './types.js';
 
 export class WebDocument {
@@ -26,7 +26,7 @@ export class WebDocument {
 
 	public load(): Promise<WebDocument> {
 		return new Promise((resolve: PromiseFunc, reject: PromiseFunc): void => {
-			debug.trace(`loading ${this.url}`);
+			log.trace(`loading ${this.url}`);
 
 			const headers: Pojo = { 'accept-encoding': 'identity' };
 			if (this.cookie)
@@ -34,18 +34,18 @@ export class WebDocument {
 
 			this.#requestLib.get(this.url, { headers })
 			.on('response', (response: any) => {
-				debug.trace(`${this.url} response data`);
+				log.trace(`${this.url} response data`);
 				let chunks: Buffer[] = [];
 				response.on('data', (d: any): void => {
 					chunks.push(d);
 				}).on('end', () => {
-					debug.trace(`${this.url} response end`);
+					log.trace(`${this.url} response end`);
 					this.#buffer = Buffer.concat(chunks);
 					this.#$doc = cheerio.load(this.#buffer.toString());
 					resolve(this);
 				});
 			}).on('error', (error: Error): void => {
-				debug.warn(`${this.url} response error: ${error}`);
+				log.warn(`${this.url} response error: ${error}`);
 				reject(error);
 			});
 		});

@@ -4,7 +4,7 @@ import http from 'http';
 
 import notifier from 'node-notifier';
 
-import debug from './debug.js';
+import log from './log.js';
 import { NotificationMessage } from './types.js';
 import { open_url } from './util.js';
 import { Aes256Cbc, Cryptor } from './crypto.js';
@@ -43,29 +43,29 @@ export class HttpPostNotifier implements Notifier {
 	}
 
 	public notify(message: NotificationMessage): void {
-		debug.trace(`posting message to ${this.url}`, message);
+		log.trace(`posting message to ${this.url}`, message);
 
 		const req = http.request(
 			this.url,
 			{ method: 'POST' },
 			(res: http.IncomingMessage) => {
 				if (res.statusCode != 201) {
-					debug.warn(`[${res.statusCode}] failed to post notification message to ${this.url}`);
+					log.warn(`[${res.statusCode}] failed to post notification message to ${this.url}`);
 					return;
 				}
 
 				res.on('data', (chunk: Buffer) => {
-					debug.trace('chunk', chunk.toString());
+					log.trace('chunk', chunk.toString());
 				});
-				res.on('end', () => { debug.trace('no more data in response'); });
+				res.on('end', () => { log.trace('no more data in response'); });
 			}
 		);
 
 		req.on('error', error => {
-			debug.warn(`could not post message: ${message.title}`, error);
+			log.warn(`could not post message: ${message.title}`, error);
 		});
 
-		debug.trace('sending message', message);
+		log.trace('sending message', message);
 		req.write(JSON.stringify(this.#cryptor.encrypt(message)));
 		req.end();
 	}

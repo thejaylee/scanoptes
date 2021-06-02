@@ -3,7 +3,7 @@ import http from 'http';
 
 import { argv } from './arguments.js';
 import { Aes256Cbc, Cryptor } from './crypto.js';
-import debug, { DebugLevel } from './debug.js';
+import log, { LogLevel } from './log.js';
 import { MessageReceiver } from './messenger.js';
 import { Notifier, DesktopNotifier, HttpPostNotifier } from './notifier.js';
 import { NotificationMessage, WatchDefinition } from './types.js';
@@ -12,12 +12,12 @@ import { Watcher } from './watcher.js';
 
 process.on('unhandledRejection', console.log);
 
-let debug_levels: DebugLevel[] = [debug.LEVEL.info, debug.LEVEL.warn, debug.LEVEL.error];
+let log_levels: LogLevel[] = [log.LEVEL.info, log.LEVEL.warn, log.LEVEL.error];
 if (argv.verbose)
-	debug_levels.push(debug.LEVEL.trace);
-debug.setLevel(debug_levels);
+	log_levels.push(log.LEVEL.trace);
+log.setLevel(log_levels);
 
-debug.trace('CLI arguments', argv);
+log.trace('CLI arguments', argv);
 
 let notifier: Notifier;
 let cryptor: Cryptor;
@@ -54,7 +54,7 @@ function start_watching(): void {
 	let watchers: Watcher[] = defs.map((def: WatchDefinition): Watcher => {
 		return Watcher.fromDefinition(def);
 	});
-	debug.trace(watchers);
+	log.trace(watchers);
 
 	for (const w of watchers) {
 		w.start();
@@ -64,7 +64,7 @@ function start_watching(): void {
 
 
 function onWatchSuccess(watcher: Watcher): void {
-	debug.info(`${watcher.name} passed!`);
+	log.info(`${watcher.name} passed!`);
 	notifier.notify({
 		title: watcher.name,
 		body: watcher.description ?? `${watcher.name} has passed!`,

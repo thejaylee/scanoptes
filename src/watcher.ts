@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { Cheerio, Node } from 'cheerio';
 
-import debug from './debug.js';
+import log from './log.js';
 import { PromiseFunc, WatchDefinition, NodeInspectorDefinition } from './types.js';
 import { WebDocument } from './web-document.js';
 import { WebDocumentInspector, NodeInspector } from './web-doc-inspector.js';
@@ -43,11 +43,11 @@ export class Watcher {
 
 	public async check(): Promise<boolean | undefined> {
 		if (this.#isCheckOutstanding) {
-			debug.trace(`check outstanding for ${this.name}`);
+			log.trace(`check outstanding for ${this.name}`);
 			return undefined;
 		}
 
-		debug.info(`checking ${this.name} ${this.url}`);
+		log.info(`checking ${this.name} ${this.url}`);
 		try {
 			this.#isCheckOutstanding = true;
 			await this.#document.load();
@@ -84,7 +84,7 @@ export class Watcher {
 	}
 
 	public start(): void {
-		debug.trace(`starting watcher for ${this.name} @ ${this.interval}s`);
+		log.trace(`starting watcher for ${this.name} @ ${this.interval}s`);
 		this.updateSentinel();
 		this.check();
 		this.#timerId = setInterval(this.check.bind(this), this.interval * 1000);
