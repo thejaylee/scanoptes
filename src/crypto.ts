@@ -1,6 +1,8 @@
 import crypto from 'crypto';
 import debug from './debug.js';
 
+const PBKDF_SALT = Buffer.from('718d9835b60005b11a0ded696266a05c', 'hex');
+const PBKDF_ITERATIONS = 100000;
 
 export interface Base64EncryptedMessage {
 	iv: string;
@@ -24,6 +26,10 @@ export class Aes256Cbc implements BlockCipher {
 
 	constructor(key: Buffer) {
 		this.#key = key;
+	}
+
+	public static deriveKey(password: string): Buffer {
+		return crypto.pbkdf2Sync(password, PBKDF_SALT, PBKDF_ITERATIONS, 32, 'sha256');
 	}
 
 	public encrypt(data: Buffer): [Buffer, Buffer] {
@@ -65,21 +71,3 @@ export class Cryptor implements ObjectCipher {
 		);
 	}
 }
-
-//const data = Buffer.from('hello, world. this is a test');
-//const key = crypto.randomBytes(32);
-//const crypt = new ObjectCryptor(new Aes256Cbc(key));
-//const enc = crypt.encrypt({title:'hello world, this is a test'});
-//const dec = crypt.decrypt(enc);
-//debug.trace(enc);
-//debug.trace(dec);
-
-//const [enc, iv] = aes256cbc(key).encrypt(data);
-//debug.trace('iv', iv);
-//debug.trace('encrypted', enc);
-//debug.trace('length', data.length, enc.length);
-//const dec = aes256cbc(key).decrypt(enc, iv);
-//debug.trace('decrypted', dec);
-//debug.trace('string', dec.toString());
-//
-//debug.trace('nonsense', aes256cbc(crypto.randomBytes(32)).decrypt(enc, iv));
