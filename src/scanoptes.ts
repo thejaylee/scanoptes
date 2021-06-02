@@ -43,7 +43,7 @@ switch (argv.command) {
 		}
 		receiver.listen(argv.port);
 		break;
-	
+
 	default:
 		console.log("You started without a command. This shouldn't happen. I don't know how you did this");
 		process.exit(-1);
