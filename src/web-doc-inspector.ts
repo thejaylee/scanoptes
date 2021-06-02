@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { Cheerio, Node } from 'cheerio';
 
-import debug from './debug.js';
+import log from './log.js';
 import { NodeInspectorDefinition } from './types.js';
 import { WebDocument } from './web-document.js';
 
@@ -24,7 +24,7 @@ export class WebDocumentInspector {
 	}
 
 	public inspect(): boolean {
-		debug.info(`inspecting ${this.#document.url}`);
+		log.info(`inspecting ${this.#document.url}`);
 		for (let ni of this.all ?? []) {
 			if (!ni.inspect(this.#document))
 				return false;
@@ -84,7 +84,7 @@ export class NodeInspector {
 	}
 
 	public inspect(document: WebDocument): boolean {
-		debug.trace(`inspecting node ${this.selector}`);
+		log.trace(`inspecting node ${this.selector}`);
 		const $el: Cheerio<Node> | undefined = document.$(this.selector);
 		if (!$el)
 			throw Error('could not find element');

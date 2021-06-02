@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import debug from './debug.js';
+import log from './log.js';
 
 const PBKDF_SALT = Buffer.from('718d9835b60005b11a0ded696266a05c', 'hex');
 const PBKDF_ITERATIONS = 100000;
@@ -62,7 +62,7 @@ export class Cryptor implements ObjectCipher {
 	}
 
 	public decrypt(msg: Base64EncryptedMessage): Buffer {
-		debug.trace('iv', Buffer.from(msg.iv, 'base64'));
+		log.trace('iv', Buffer.from(msg.iv, 'base64'));
 		return JSON.parse(
 			this.#cipher.decrypt(
 				Buffer.from(msg.enc, 'base64'),
