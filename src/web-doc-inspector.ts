@@ -2,7 +2,7 @@ import fs from 'fs';
 import { Cheerio, Node } from 'cheerio';
 
 import log from './log.js';
-import { NodeInspectorDefinition } from './types.js';
+import { NodeInspectorDefinition, Pojo } from './types.js';
 import { WebDocument } from './web-document.js';
 
 export class WebDocumentInspector {
@@ -21,6 +21,10 @@ export class WebDocumentInspector {
 			this.all.push(NodeInspector.fromDefinition(d));
 		for (let d of any ?? [])
 			this.any.push(NodeInspector.fromDefinition(d));
+	}
+
+	public setHeaders(headers?: Pojo): void {
+		this.#document.headers = {...headers};
 	}
 
 	public inspect(): boolean {
@@ -88,8 +92,10 @@ export class NodeInspector {
 		const $el: Cheerio<Node> | undefined = document.$(this.selector);
 		if (!$el)
 			throw Error('could not find element');
+		//log.trace('node contents', $el.html());
 
 		let evaluatee: string;
+		let includes: string | undefined = this.condition.includes;
 
 		let oldHtml: string | undefined = this.#nodeHtml;
 		let oldText: string | undefined = this.#nodeText;
@@ -108,12 +114,15 @@ export class NodeInspector {
 				if (this.condition.anyChange)
 					return oldText !== undefined && this.#nodeText != oldText;
 
-				evaluatee = this.condition.caseSensitive ? this.#nodeText : this.#nodeText.toLowerCase();
+				evaluatee = this.#nodeText;
 				break;
 		}
 
 		let num: number = Number(evaluatee.replace(/[^0-9\.]/g, ''));
-		const includes: string | undefined = this.condition.caseSensitive ? this.condition.includes : this.condition.includes?.toLowerCase();
+		if (!this.condition.caseSensitive) {
+			evaluatee = evaluatee.toLowerCase();
+			includes = includes?.toLowerCase();
+		}
 
 		if (includes && !evaluatee.includes(includes))
 			return false;

@@ -37,6 +37,7 @@ export class Watcher {
 	public static fromDefinition(definition: WatchDefinition): Watcher {
 		let watcher: Watcher = new Watcher(definition.name, definition.url, definition.interval);
 		watcher.description = definition.description;
+		watcher.#inspector.setHeaders(definition.headers);
 		watcher.#inspector.loadNodeInspectorDefinitions(definition.all, definition.any);
 		return watcher;
 	}

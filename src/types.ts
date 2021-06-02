@@ -7,7 +7,7 @@ export interface WatchDefinition {
 	description?: string;
 	url: string;
 	interval: number;
-	cookie?: string;
+	headers?: Pojo;
 	all?: NodeInspectorDefinition[];
 	any?: NodeInspectorDefinition[];
 }
