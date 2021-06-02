@@ -17,9 +17,13 @@ This will listen for notifications from a Watcher and invoke desktop alerts
 ### Desktop mode
 This will run as both the Watcher and Notifier in one
 
+## Building
+typescript is required
+`npm install`
+`npm run build`
 
 ## Usage
-Invoke with `--help` for CLI arguments
+Invoke through `npm run commands` or as `node build/scanoptes.js' with `--help` for CLI arguments
 
 ## Watchers
 Page changes are watched via a watch definition file (default: watches.json) with the following structure (keys ending with "?" denote optional):
