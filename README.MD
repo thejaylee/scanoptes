@@ -23,7 +23,7 @@ typescript is required
 2. `npm run build`
 
 ## Usage
-Invoke through `npm run` commands or as `node build/scanoptes.js' with `--help` for CLI arguments
+Invoke through `npm run` commands or as `node build/scanoptes.js` with `--help` for CLI arguments
 
 ## Watchers
 Page changes are watched via a watch definition file (default: watches.json) with the following structure (keys ending with "?" denote optional):
@@ -39,8 +39,8 @@ Page changes are watched via a watch definition file (default: watches.json) wit
     // URL of the page to watch,
     "url": "https://www.google.com",
 
-    // cookie header to send
-    "cookie": "",
+	// http headers to send
+    "headers": {},
 
     // Interval for inspections in seconds
     "interval": 600,

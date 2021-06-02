@@ -62,7 +62,6 @@ export class Cryptor implements ObjectCipher {
 	}
 
 	public decrypt(msg: Base64EncryptedMessage): Buffer {
-		log.trace('iv', Buffer.from(msg.iv, 'base64'));
 		return JSON.parse(
 			this.#cipher.decrypt(
 				Buffer.from(msg.enc, 'base64'),
