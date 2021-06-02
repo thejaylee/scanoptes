@@ -1,22 +1,39 @@
-# Pricy
-#### A basic tool to monitoring web pages for changes
+# Scanoptes
+#### A basic tool to watch web pages for changes
 
-There are two tools in this package:
-1. pricy-watcher - for monitoring changes on pages
-2. pricy-notifier - a desktop tool for notifications
+(A portmanteau of "scan" and "panoptes")
 
-Pricy is designed so that the watcher can be rnu as a daemon out of the way on some other computer, and will send events to the notifier which will alert the user.
+Scanoptes may be run in one of three modes:
+* Desktop
+* Watcher
+* Notifier
 
-Page changes are watched via a watch definition file (default: watches.json) will the following structure (keys ending with "?" denote optional):
+### Watcher
+This mode will perform the watching and send out notifications
+
+### Notifier
+This will listen for notifications from a Watcher and invoke desktop alerts
+
+### Desktop mode
+This will run as both the Watcher and Notifier in one
+
+
+## Usage
+Invoke with `--help` for CLI arguments
+
+## Watchers
+Page changes are watched via a watch definition file (default: watches.json) with the following structure (keys ending with "?" denote optional):
 
 ```javascript
 [{
     // The watch name,
     "name": "google inspector",
 
+    // A description
+    "description?": "the google homepage has changed",
+
     // URL of the page to watch,
-    // https only and "https://" is required
-    "url": "https://google.com",
+    "url": "https://www.google.com",
 
     // cookie header to send
     "cookie": "",

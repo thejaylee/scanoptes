@@ -1,40 +1,42 @@
 {
-  "name": "pricy",
-  "type": "module",
-  "version": "1.0.0",
-  "description": "price checker",
-  "main": "build/pricy-watcher.js",
-  "dependencies": {
-    "better-sqlite3": "^7.4.0",
-    "chalk": "^3.0.0",
-    "cheerio": "^1.0.0-rc.9",
-    "date-and-time": "^1.0.0"
-  },
-  "devDependencies": {
-    "@tsconfig/node14": "^1.0.0",
-    "@types/date-and-time": "^0.13.0",
-    "@types/node": "^15.3.0",
-    "npm-watch": "^0.9.0",
-    "source-map-support": "^0.5.19",
-    "tsc-watch": "^4.2.9"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "tsc-watch": "tsc-watch --compiler /usr/bin/tsc",
-    "build": "tsc --outDir build",
-    "watch": "npm-watch",
-    "debug-watcher": "NODE_ENV=debug node -r source-map-support/register build/pricy-watcher.js",
-    "start-watcher": "node build/pricy-watcher.js",
-    "debug-notifier": "NODE_ENV=debug node -r source-map-support/register build/pricy-notifier.js",
-    "start-notifier": "node build/pricy-notifier.js"
-  },
-  "config": {
-    "watches_file": "watches.json",
-    "scan_interval": 600
-  },
-  "watch": {
-    "start": "build/*.js"
-  },
-  "author": "Jason Lee",
-  "license": "ISC"
+	"name": "scanoptes",
+	"type": "module",
+	"version": "1.0.0",
+	"description": "price checker",
+	"main": "build/scanoptes.js",
+	"dependencies": {
+		"@types/node-notifier": "^8.0.0",
+		"better-sqlite3": "^7.4.0",
+		"chalk": "^3.0.0",
+		"cheerio": "^1.0.0-rc.9",
+		"date-and-time": "^1.0.0",
+		"node-notifier": "^10.0.0",
+		"yargs": "^17.0.1"
+	},
+	"devDependencies": {
+		"@tsconfig/node16": "^1.0.1",
+		"@types/date-and-time": "^0.13.0",
+		"@types/node": "^15.3.0",
+		"@types/yargs": "^17.0.0",
+		"npm-watch": "^0.9.0",
+		"source-map-support": "^0.5.19",
+		"tsc-watch": "^4.2.9"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"tsc-watch": "tsc-watch --compiler /usr/bin/tsc",
+		"build": "tsc --outDir build",
+		"watch": "npm-watch",
+		"debug-desktop": "node -r source-map-support/register build/scanoptes.js desktop -v",
+		"start-desktop": "node -r source-map-support/register build/scanoptes.js desktop",
+		"debug-watcher": "node -r source-map-support/register build/scanoptes.js watcher -v --password t3st3r",
+		"start-watcher": "node -r source-map-support/register build/scanoptes.js watcher",
+		"debug-notifier": "node -r source-map-support/register build/scanoptes.js notifier -v --password t3st3r",
+		"start-notifier": "node -r source-map-support/register build/scanoptes.js notifier"
+	},
+	"watch": {
+		"start": "build/*.js"
+	},
+	"author": "Jason Lee",
+	"license": "ISC"
 }

@@ -107,3 +107,4 @@ build/
 watches.json
 aliases.sh
 *.pem
+*.p12
