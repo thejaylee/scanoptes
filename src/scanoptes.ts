@@ -20,8 +20,8 @@ log.setLevel(log_levels);
 log.trace('CLI arguments', argv);
 
 const start_notice: NotificationMessage = {
-	title: "Scanoptes Ready",
-	body: "Scanoptes has started up"
+	title: "Scanoptes Watching",
+	body: "Scanoptes watcher has started up"
 }
 
 let notifier: Notifier;
