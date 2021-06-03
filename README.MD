@@ -9,13 +9,17 @@ Scanoptes may be run in one of three modes:
 * Notifier
 
 ### Watcher
-This mode will perform the watching and send out notifications
+This mode will watch/scan web pages and send out notifications
 
 ### Notifier
 This will listen for notifications from a Watcher and invoke desktop alerts
 
 ### Desktop mode
 This will run as both the Watcher and Notifier in one
+
+#### Note
+When running in watcher/notifier mode, it is recommended to start the notifier first. This is because by default the
+watcher will send out a startup notification to the notifier to ensure notifications are seen.
 
 ## Building
 typescript is required
@@ -39,7 +43,7 @@ Page changes are watched via a watch definition file (default: watches.json) wit
     // URL of the page to watch,
     "url": "https://www.google.com",
 
-	// http headers to send
+    // http headers to send
     "headers": {},
 
     // Interval for inspections in seconds
