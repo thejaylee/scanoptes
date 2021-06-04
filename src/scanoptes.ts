@@ -36,7 +36,7 @@ switch (argv.command) {
 		break;
 
 	case 'watcher':
-		cryptor = new Cryptor(new Aes256Cbc(Aes256Cbc.deriveKey(argv.password)));
+		cryptor = new Cryptor(new Aes256Cbc(fs.readFileSync(argv.key)));
 		notifier = new HttpPostNotifier(`http://${argv.host}:${argv.port}`, cryptor);
 		start_watching();
 		if (!argv.nostart)
@@ -44,13 +44,17 @@ switch (argv.command) {
 		break;
 
 	case 'notifier':
-		cryptor = new Cryptor(new Aes256Cbc(Aes256Cbc.deriveKey(argv.password)));
+		cryptor = new Cryptor(new Aes256Cbc(fs.readFileSync(argv.key)));
 		notifier = new DesktopNotifier();
 		const receiver: MessageReceiver = new MessageReceiver(cryptor);
 		receiver.callback = (message: NotificationMessage): void => {
 			notifier.notify(message);
 		}
 		receiver.listen(argv.port);
+		break;
+
+	case 'genkey':
+		await fs.writeFileSync(argv.key, Aes256Cbc.generateKey(), { mode: 0o600 });
 		break;
 
 	default:

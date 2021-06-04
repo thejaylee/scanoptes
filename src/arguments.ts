@@ -3,6 +3,7 @@ import { hideBin } from 'yargs/helpers';
 
 const DEFAULT_PORT: number = 8888;
 const DEFAULT_WATCHES_FILE = 'watches.json';
+const DEFAULT_KEY_FILE = 'encryption.key';
 
 const command: any = {
 	desktop: {
@@ -23,38 +24,36 @@ const command: any = {
 			hidden: true,
 		},
 	},
+	genkey: {
+		command: {
+			default: 'genkey',
+			hidden: true,
+		},
+	},
 };
 
 const options: any = {};
 options.all = {
-	watches: {
-		alias: 'f',
-		default: DEFAULT_WATCHES_FILE,
-		type: 'string',
-		describe: 'JSON watch definition file',
-	},
 	verbose: {
 		alias: 'v',
 		default: false,
 		type: 'boolean',
 		describe: "verbose level output",
 	},
+};
+options.active = {
+	watches: {
+		alias: 'f',
+		default: DEFAULT_WATCHES_FILE,
+		type: 'string',
+		describe: 'JSON watch definition file',
+	},
 	nostart: {
 		default: false,
 		type: 'boolean',
 		describe: 'supress the startup notification'
 	},
-};
-options.password = {
-	password: {
-		alias: 'k',
-		demandOption: true,
-		requiresArg: true,
-		type: 'string',
-		describe: 'password to be used for PBKDF encryption key',
-		group: 'Watcher/Notifier:',
-	},
-};
+}
 options.port = {
 	port: {
 		alias: 'p',
@@ -64,11 +63,20 @@ options.port = {
 		group: 'Notifier:',
 	}
 };
-options.notifier = {
-	...command.notifier, ...options.password, ...options.port
+options.key = {
+	key: {
+		alias: 'k',
+		requiresArg: true,
+		type: 'string',
+		default: DEFAULT_KEY_FILE,
+		describe: 'encryption key filename',
+		group: 'Watcher:',
+	},
 };
-options.watcher = {
-	...command.watcher, ...options.password, ...options.port,
+
+options.desktop = { ...options.active, ...options.port };
+options.notifier = { ...options.active, ...options.port, ...options.key };
+options.watcher = { ...options.active, ...options.port, ...options.key,
 	host: {
 		alias: 'h',
 		demandOption: true,
@@ -93,17 +101,18 @@ export interface Arguments {
 	nostart: boolean;
 	host: string;
 	h: string;
-	password: string;
-	k: string;
 	port: number;
 	p: number;
+	key: string;
+	k: string;
 }
 
 export const argv: Arguments = yargs(hideBin(process.argv))
 	.config()
 	.options(options.all)
-	.command(['desktop', '$0'], 'run in standalone desktop mode', command.desktop)
-	.command('notifier', 'run in desktop notification mode', options.notifier)
-	.command('watcher', 'run watcher mode', options.watcher)
+	.command(['desktop', '$0'], 'run in standalone desktop mode', { ...command.desktop, ...options.desktop })
+	.command('notifier', 'run in desktop notification mode', { ...command.notifier, ...options.notifier })
+	.command('watcher', 'run watcher mode', { ...command.watcher, ...options.watcher })
+	.command('genkey', 'generate an encryption key', { ...command.genkey, ...options.key })
 	.demandCommand(1)
 	.parse() as Arguments;
