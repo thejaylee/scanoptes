@@ -3,19 +3,31 @@
 
 (A portmanteau of "scan" and "panoptes")
 
-Scanoptes may be run in one of three modes:
+Scanoptes may be run with the following commands:
 * Desktop
 * Watcher
 * Notifier
+* Generate Key
 
 ### Watcher
-This mode will perform the watching and send out notifications
+`scanoptes.js watcher --help`
+This mode will watch/scan web pages and send out notifications
 
 ### Notifier
+`scanoptes.js notifier --help`
 This will listen for notifications from a Watcher and invoke desktop alerts
 
 ### Desktop mode
+`scanoptes.js desktop --help`
 This will run as both the Watcher and Notifier in one
+
+### Generate Key
+`scanoptes.js genkey --help`
+Generate an excryption key used for watcher/notifier mode
+
+#### Note
+When running in watcher/notifier mode, it is recommended to start the notifier first. This is because by default the
+watcher will send out a startup notification to the notifier to ensure notifications are seen.
 
 ## Building
 typescript is required
@@ -39,7 +51,7 @@ Page changes are watched via a watch definition file (default: watches.json) wit
     // URL of the page to watch,
     "url": "https://www.google.com",
 
-	// http headers to send
+    // http headers to send
     "headers": {},
 
     // Interval for inspections in seconds

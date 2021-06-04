@@ -32,6 +32,10 @@ export class Aes256Cbc implements BlockCipher {
 		return crypto.pbkdf2Sync(password, PBKDF_SALT, PBKDF_ITERATIONS, 32, 'sha256');
 	}
 
+	public static generateKey(): Buffer {
+		return crypto.randomBytes(32);
+	}
+
 	public encrypt(data: Buffer): [Buffer, Buffer] {
 		const iv = crypto.randomBytes(16);
 		const cipher = crypto.createCipheriv(Aes256Cbc.ALG, this.#key, iv);

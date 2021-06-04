@@ -106,5 +106,6 @@ dist
 build/
 watches.json
 aliases.sh
+encryption.key
 *.pem
 *.p12
