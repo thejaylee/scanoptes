@@ -29,9 +29,9 @@
 		"watch": "npm-watch",
 		"debug-desktop": "node -r source-map-support/register build/scanoptes.js desktop -v",
 		"start-desktop": "node -r source-map-support/register build/scanoptes.js desktop",
-		"debug-watcher": "node -r source-map-support/register build/scanoptes.js watcher -v --password t3st3r",
+		"debug-watcher": "node -r source-map-support/register build/scanoptes.js watcher -v",
 		"start-watcher": "node -r source-map-support/register build/scanoptes.js watcher",
-		"debug-notifier": "node -r source-map-support/register build/scanoptes.js notifier -v --password t3st3r",
+		"debug-notifier": "node -r source-map-support/register build/scanoptes.js notifier -v",
 		"start-notifier": "node -r source-map-support/register build/scanoptes.js notifier"
 	},
 	"watch": {
