@@ -4,6 +4,7 @@ import { ChalkFunction } from 'chalk';
 
 export enum LogLevel {
 	trace = 'TRACE',
+	debug = 'DEBUG',
 	info = 'INFO',
 	warn = 'WARN',
 	error = 'ERROR'
@@ -11,7 +12,8 @@ export enum LogLevel {
 type LogLevelKey = keyof typeof LogLevel;
 const LogLevelColors: Record<LogLevel, ChalkFunction> = {
 	[LogLevel.trace]: chalk.white,
-	[LogLevel.info]: chalk.cyan,
+	[LogLevel.debug]: chalk.cyanBright,
+	[LogLevel.info]: chalk.greenBright,
 	[LogLevel.warn]: chalk.ansi256(208),
 	[LogLevel.error]: chalk.redBright,
 }
@@ -40,6 +42,7 @@ function setLevel(levels: LogLevel[]): void {
 
 interface Log {
 	trace: PrintFunc;
+	debug: PrintFunc;
 	info:  PrintFunc;
 	warn:  PrintFunc;
 	error: PrintFunc;
@@ -49,12 +52,13 @@ interface Log {
 
 const log: Log = {
 	trace: Printers.nop,
+	debug: Printers.nop,
 	info: Printers.nop,
 	warn: Printers.nop,
 	error: Printers.nop,
 	LEVEL: LogLevel,
 	setLevel
 };
-setLevel([LogLevel.trace, LogLevel.info , LogLevel.warn , LogLevel.error]);
+setLevel([LogLevel.info , LogLevel.warn , LogLevel.error]);
 
 export default log;

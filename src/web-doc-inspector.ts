@@ -88,11 +88,11 @@ export class NodeInspector {
 	}
 
 	public inspect(document: WebDocument): boolean {
-		log.trace(`inspecting node ${this.selector}`);
+		log.debug(`inspecting node ${this.selector}`);
 		const $el: Cheerio<Node> | undefined = document.$(this.selector);
 		if (!$el)
-			throw Error('could not find element');
-		//log.trace('node contents', $el.html());
+			throw Error('Cheerio failed');
+		log.trace(this.selector, $el);
 
 		let evaluatee: string;
 		let includes: string | undefined = this.condition.includes;
@@ -101,6 +101,8 @@ export class NodeInspector {
 		let oldText: string | undefined = this.#nodeText;
 		this.#nodeHtml = $el.html() ?? undefined;
 		this.#nodeText = $el.text();
+		log.trace(`${this.selector} html:`, this.#nodeHtml);
+		log.trace(`${this.selector} text:`, this.#nodeText);
 
 		switch (this.context) {
 			case NodeInspectorContext.HTML:
@@ -119,6 +121,8 @@ export class NodeInspector {
 		}
 
 		let num: number = Number(evaluatee.replace(/[^0-9\.]/g, ''));
+		log.trace(`${this.selector} evaluatee: ${evaluatee}`);
+		log.trace(`${this.selector} num: ${num}`);
 		if (!this.condition.caseSensitive) {
 			evaluatee = evaluatee.toLowerCase();
 			includes = includes?.toLowerCase();

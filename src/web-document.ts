@@ -20,7 +20,7 @@ export class WebDocument {
 
 	public load(): Promise<WebDocument> {
 		return new Promise((resolve: PromiseFunc, reject: PromiseFunc): void => {
-			log.trace(`loading ${this.url}`);
+			log.debug(`requesting ${this.url}`);
 
 			const lib: typeof http | typeof https = this.url.match(/^https:/i) ? https : http;
 
@@ -30,17 +30,19 @@ export class WebDocument {
 				Accept: '*/*',
 				'Accept-Encoding': 'identity',
 			};
+			log.trace(`${this.url} request headers`, headers);
 
 			lib.get(this.url, { headers })
 			.on('response', (response: any) => {
+				log.debug(`${this.url} returned ${response.statusCode}`);
 				let chunks: Buffer[] = [];
 				response.on('data', (d: any): void => {
 					chunks.push(d);
 				}).on('end', () => {
-					log.trace(`${this.url} response end`);
 					this.#buffer = Buffer.concat(chunks);
 					this.#$doc = cheerio.load(this.#buffer.toString());
-					//log.trace('response data', this.#buffer.toString());
+					log.debug(`response length: ${this.#buffer.length}`);
+					log.trace('response data', this.#buffer.toString());
 					resolve(this);
 				});
 			}).on('error', (error: Error): void => {

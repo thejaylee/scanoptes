@@ -38,8 +38,13 @@ options.all = {
 		alias: 'v',
 		default: false,
 		type: 'boolean',
-		describe: "verbose level output",
+		describe: "debug level output",
 	},
+	vv: {
+		default: false,
+		type: 'boolean',
+		describe: "trace level output"
+	}
 };
 options.active = {
 	watches: {
@@ -98,6 +103,7 @@ export interface Arguments {
 	f: string;
 	verbose: boolean;
 	v: boolean;
+	vv: boolean;
 	nostart: boolean;
 	host: string;
 	h: string;

@@ -44,7 +44,7 @@ export class Watcher {
 
 	public async check(): Promise<boolean | undefined> {
 		if (this.#isCheckOutstanding) {
-			log.trace(`check outstanding for ${this.name}`);
+			log.info(`check outstanding for ${this.name}`);
 			return undefined;
 		}
 
@@ -60,6 +60,7 @@ export class Watcher {
 		}
 
 		let result: boolean = this.#inspector.inspect();
+		log.info(`${this.name} ${result}`);
 		if (result === true && this.#lastCheckResult !== result) {
 			this.#lastPassedTime = new Date();
 			this.#onPass?.call(null, this);

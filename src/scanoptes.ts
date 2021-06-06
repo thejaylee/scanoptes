@@ -13,7 +13,9 @@ import { Watcher } from './watcher.js';
 process.on('unhandledRejection', console.log);
 
 let log_levels: LogLevel[] = [log.LEVEL.info, log.LEVEL.warn, log.LEVEL.error];
-if (argv.verbose)
+if (argv.v || argv.vv)
+	log_levels.push(log.LEVEL.debug);
+if (argv.vv)
 	log_levels.push(log.LEVEL.trace);
 log.setLevel(log_levels);
 
