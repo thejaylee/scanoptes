@@ -1,4 +1,5 @@
 import fs from 'fs';
+import chalk from 'chalk';
 import { Cheerio, Node } from 'cheerio';
 
 import log from './log.js';
@@ -68,7 +69,7 @@ export class Watcher {
 
 		this.#document = new WebDocument(buffer);
 		let result: boolean = (this.statusCodes?.includes(statusCode) ?? false) && this.#inspector.inspect(this.#document);
-		log.info(`${this.name} ${result}`);
+		log.info(`${this.name} ${result ? chalk.green('passed') : chalk.red('failed')}`);
 		if (result === true && this.#lastCheckResult !== result) {
 			this.#lastPassedTime = new Date();
 			this.#onPass?.call(null, this);
