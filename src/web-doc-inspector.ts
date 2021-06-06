@@ -6,14 +6,12 @@ import { NodeInspectorDefinition, Pojo } from './types.js';
 import { WebDocument } from './web-document.js';
 
 export class WebDocumentInspector {
-	#document: WebDocument;
 	all: NodeInspector[];
 	any: NodeInspector[];
 
-	constructor(document: WebDocument) {
+	constructor() {
 		this.all = [];
 		this.any = [];
-		this.#document = document;
 	}
 
 	public loadNodeInspectorDefinitions(all?: NodeInspectorDefinition[], any?: NodeInspectorDefinition[]): void {
@@ -23,19 +21,14 @@ export class WebDocumentInspector {
 			this.any.push(NodeInspector.fromDefinition(d));
 	}
 
-	public setHeaders(headers?: Pojo): void {
-		this.#document.headers = {...headers};
-	}
-
-	public inspect(): boolean {
-		log.info(`inspecting ${this.#document.url}`);
+	public inspect(document: WebDocument): boolean {
 		for (let ni of this.all ?? []) {
-			if (!ni.inspect(this.#document))
+			if (!ni.inspect(document))
 				return false;
 		}
 
 		for (let ni of this.any ?? []) {
-			if (ni.inspect(this.#document))
+			if (ni.inspect(document))
 				break;
 		}
 

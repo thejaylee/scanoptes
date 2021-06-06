@@ -12,8 +12,8 @@ export enum LogLevel {
 type LogLevelKey = keyof typeof LogLevel;
 const LogLevelColors: Record<LogLevel, ChalkFunction> = {
 	[LogLevel.trace]: chalk.white,
-	[LogLevel.debug]: chalk.cyanBright,
-	[LogLevel.info]: chalk.greenBright,
+	[LogLevel.debug]: chalk.cyan,
+	[LogLevel.info]: chalk.green,
 	[LogLevel.warn]: chalk.ansi256(208),
 	[LogLevel.error]: chalk.redBright,
 }
