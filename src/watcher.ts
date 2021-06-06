@@ -4,10 +4,12 @@ import { Cheerio, Node } from 'cheerio';
 import log from './log.js';
 import { PromiseFunc, WatchDefinition, NodeInspectorDefinition } from './types.js';
 import { WebDocument } from './web-document.js';
+import { UrlLoader } from './url-loader.js';
 import { WebDocumentInspector, NodeInspector } from './web-doc-inspector.js';
 
 export class Watcher {
-	#document: WebDocument;
+	#loader: UrlLoader;
+	#document?: WebDocument;
 	#inspector: WebDocumentInspector;
 	#isCheckOutstanding: boolean;
 	#timerId?: NodeJS.Timeout;
@@ -20,6 +22,7 @@ export class Watcher {
 	name: string;
 	description?: string;
 	url: string;
+	statusCodes?: number[];
 	interval: number;
 	stopOnPass: boolean;
 
@@ -28,8 +31,8 @@ export class Watcher {
 		this.url = url;
 		this.interval = interval;
 		this.stopOnPass = false;
-		this.#document = new WebDocument(url);
-		this.#inspector = new WebDocumentInspector(this.#document);
+		this.#loader = new UrlLoader(url);
+		this.#inspector = new WebDocumentInspector();
 		this.#isCheckOutstanding = false;
 		this.#lastCheckResult = false;
 	}
@@ -37,21 +40,25 @@ export class Watcher {
 	public static fromDefinition(definition: WatchDefinition): Watcher {
 		let watcher: Watcher = new Watcher(definition.name, definition.url, definition.interval);
 		watcher.description = definition.description;
-		watcher.#inspector.setHeaders(definition.headers);
+		watcher.statusCodes = definition.statusCodes;
+		watcher.#loader.headers = definition.headers ?? {};
 		watcher.#inspector.loadNodeInspectorDefinitions(definition.all, definition.any);
 		return watcher;
 	}
 
 	public async check(): Promise<boolean | undefined> {
 		if (this.#isCheckOutstanding) {
-			log.trace(`check outstanding for ${this.name}`);
+			log.info(`check outstanding for ${this.name}`);
 			return undefined;
 		}
 
 		log.info(`checking ${this.name} ${this.url}`);
+		let statusCode: number;
+		let buffer: Buffer;
 		try {
 			this.#isCheckOutstanding = true;
-			await this.#document.load();
+			[statusCode, buffer] = await this.#loader.load();
+			log.trace('response data', buffer.toString());
 		} catch (error) {
 			this.#onFail?.call(null, this);
 			throw error;
@@ -59,7 +66,9 @@ export class Watcher {
 			this.#isCheckOutstanding = false;
 		}
 
-		let result: boolean = this.#inspector.inspect();
+		this.#document = new WebDocument(buffer);
+		let result: boolean = (this.statusCodes?.includes(statusCode) ?? false) && this.#inspector.inspect(this.#document);
+		log.info(`${this.name} ${result}`);
 		if (result === true && this.#lastCheckResult !== result) {
 			this.#lastPassedTime = new Date();
 			this.#onPass?.call(null, this);

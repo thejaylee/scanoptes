@@ -8,6 +8,7 @@ export interface WatchDefinition {
 	url: string;
 	interval: number;
 	headers?: Pojo;
+	statusCodes: number[],
 	all?: NodeInspectorDefinition[];
 	any?: NodeInspectorDefinition[];
 }
