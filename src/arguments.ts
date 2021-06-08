@@ -58,6 +58,17 @@ options.active = {
 		type: 'boolean',
 		describe: 'supress the startup notification'
 	},
+	'notification-retries': {
+		alias: 'nr',
+		nargs: 2,
+		default: [0, 0],
+		type: 'array',
+		requiresArg: true,
+		describe: 'interval (seconds) and count to retry sending notifications\n'
+			+ 'eg. "300 5" will retry 5 times every 300 seconds\n'
+			+ 'desktop/notifier: before the the notification is clicked/acknowledged\n'
+			+ 'watcher: before the notifier replies with HTTP 201'
+	},
 }
 options.port = {
 	port: {
@@ -105,6 +116,8 @@ export interface Arguments {
 	v: boolean;
 	vv: boolean;
 	nostart: boolean;
+	'notification-retries': number[];
+	nr: number[];
 	host: string;
 	h: string;
 	port: number;
@@ -121,4 +134,5 @@ export const argv: Arguments = yargs(hideBin(process.argv))
 	.command('watcher', 'run watcher mode', { ...command.watcher, ...options.watcher })
 	.command('genkey', 'generate an encryption key', { ...command.genkey, ...options.key })
 	.demandCommand(1)
+	.wrap(null)
 	.parse() as Arguments;

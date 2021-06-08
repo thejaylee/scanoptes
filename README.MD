@@ -56,6 +56,7 @@ Page changes are watched via a watch definition file (default: watches.json) wit
     "url": "https://www.google.com",
 
     // The response must be one of the following HTTP status codes
+    // an empty array denotes any
     "statusCodes": [200],
 
     // HTTP headers to send
