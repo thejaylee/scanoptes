@@ -1,6 +1,4 @@
-import fs from 'fs';
 import chalk from 'chalk';
-import { Cheerio, Node } from 'cheerio';
 
 import log from './log.js';
 import { PromiseFunc, WatchDefinition, NodeInspectorDefinition } from './types.js';

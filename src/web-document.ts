@@ -1,10 +1,5 @@
-import https from 'https';
-import http from 'http';
 import * as cheerio from 'cheerio';
 import { Cheerio, Node } from 'cheerio';
-
-import log from './log.js';
-import { Pojo, PromiseFunc } from './types.js';
 
 export class WebDocument {
 	#buffer?: Buffer;

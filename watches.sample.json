@@ -5,6 +5,8 @@
 	"interval": 600,
 	"all": [{
 		"selector": "#hplogo",
-		"anyChange": true
+		"condition": {
+			"anyChange": true
+		}
 	}]
 }]

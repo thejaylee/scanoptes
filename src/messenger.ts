@@ -1,4 +1,3 @@
-import fs from 'fs';
 import http, { IncomingMessage, ServerResponse } from 'http';
 
 import log from './log.js';

@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import log from './log.js';
 
 const PBKDF_SALT = Buffer.from('718d9835b60005b11a0ded696266a05c', 'hex');
 const PBKDF_ITERATIONS = 100000;
