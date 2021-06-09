@@ -43,10 +43,12 @@ abstract class AbstractRetryNotifier implements RetryNotifier {
 	public async notifyWithRetry(message: NotificationMessage): Promise<void> {
 		try {
 			return await this.notify(message);
-		} catch (err) {
-			log.warn(`notification for message "${message.title}" failed. retrying ${this.#retryCount} times every ${this.#retryInterval}s`);
-			this.addMessageForRetry(message);
-			throw err;
+		} catch (error) {
+			if ((this.#retryInterval ?? 0) > 0 && (this.#retryCount ?? 0) > 0) {
+				log.warn(`notification for message "${message.title}" failed. retrying ${this.#retryCount} times every ${this.#retryInterval}s`);
+				this.addMessageForRetry(message);
+			}
+			throw error;
 		}
 	}
 
@@ -105,7 +107,7 @@ export class DesktopNotifier extends AbstractRetryNotifier implements Notifier {
 				icon
 			},
 			(err, response, metadata) => {
-				if (err || response != 'activate')
+				if (err || response === 'timedout')
 					return reject();
 				else
 					resolve();
