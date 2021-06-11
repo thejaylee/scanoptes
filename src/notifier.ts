@@ -112,7 +112,7 @@ export class DesktopNotifier extends AbstractRetryNotifier implements Notifier {
 				else
 					resolve();
 
-				if (message.url)
+				if (response === 'activate' && message.url)
 					open_url(message.url);
 			});
 		});
