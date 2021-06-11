@@ -110,3 +110,4 @@ encryption.key
 *.pem
 *.p12
 **/*.ignore
+tags
