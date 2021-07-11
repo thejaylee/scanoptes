@@ -91,7 +91,6 @@ function start_watching(): void {
 }
 
 function onWatchSuccess(watcher: Watcher): void {
-	log.info(`${watcher.name} passed!`);
 	notifier.notifyWithRetry({
 		title: watcher.name,
 		body: watcher.description ?? `${watcher.name} has passed!`,
