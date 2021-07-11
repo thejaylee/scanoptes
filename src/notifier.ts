@@ -107,7 +107,7 @@ export class DesktopNotifier extends AbstractRetryNotifier implements Notifier {
 				icon
 			},
 			(err, response, metadata) => {
-				if (err || response === 'timedout')
+				if (err || response === 'timeout')
 					return reject();
 				else
 					resolve();
