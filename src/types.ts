@@ -18,6 +18,7 @@ export interface NodeInspectorDefinition {
 	context: "TEXT" | "HTML";
 	name?: string;
 	condition: {
+		negated: boolean;
 		anyChange?: string;
 		caseSensitive?: string;
 		includes?: string;

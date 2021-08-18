@@ -81,6 +81,9 @@ Page changes are watched via a watch definition file (default: watches.json) wit
         // various conditions to test for
         "condition": {
 
+			// negate this condition
+			"negated?": false,
+
             // monitor for any change in either the html or text
             // when set to true this will ignore all other conditions
             "anyChange?": false,

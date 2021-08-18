@@ -22,8 +22,7 @@ export class WebDocumentInspector {
 
 	public inspect(document: WebDocument): boolean {
 		for (let ni of this.all ?? []) {
-			if (!ni.inspect(document))
-				return false;
+			return ni.inspect(document);
 		}
 
 		for (let ni of this.any ?? []) {
@@ -45,6 +44,7 @@ export class NodeInspector {
 	context: NodeInspectorContext;
 	name?: string;
 	condition: {
+		negated?: boolean;
 		anyChange?: boolean;
 		caseSensitive?: boolean;
 		includes?: string;
@@ -65,6 +65,8 @@ export class NodeInspector {
 
 		if (definition.name !== undefined)
 			ni.name = String(definition.name);
+		if (definition.condition.negated !== undefined)
+			ni.condition.negated = Boolean(definition.condition.negated);
 		if (definition.condition.caseSensitive !== undefined)
 			ni.condition.caseSensitive = Boolean(definition.condition.caseSensitive);
 		if (definition.condition.anyChange !== undefined)
@@ -86,6 +88,7 @@ export class NodeInspector {
 			throw Error('Cheerio failed');
 		log.trace(this.selector, $el);
 
+		const isNegated = Boolean(this.condition.negated);
 		let evaluatee: string;
 		let includes: string | undefined = this.condition.includes;
 
@@ -99,14 +102,14 @@ export class NodeInspector {
 		switch (this.context) {
 			case NodeInspectorContext.HTML:
 				if (this.condition.anyChange)
-					return oldHtml !== undefined && this.#nodeHtml != oldHtml;
+					return isNegated !== (oldHtml !== undefined && this.#nodeHtml != oldHtml);
 
 				evaluatee = this.#nodeHtml ?? '';
 				break;
 
 			case NodeInspectorContext.TEXT:
 				if (this.condition.anyChange)
-					return oldText !== undefined && this.#nodeText != oldText;
+					return isNegated !== (oldText !== undefined && this.#nodeText != oldText);
 
 				evaluatee = this.#nodeText;
 				break;
@@ -121,13 +124,13 @@ export class NodeInspector {
 		}
 
 		if (includes && !evaluatee.includes(includes))
-			return false;
+			return false !== isNegated;
 		if (this.condition.match && !evaluatee.match(this.condition.match))
-			return false;
+			return false !== isNegated;
 		if (this.condition.lessThan && num >= this.condition.lessThan)
-			return false;
+			return false !== isNegated;
 
-		return true;
+		return true !== isNegated;
 	}
 
 	public get nodeHtml(): string | undefined {
