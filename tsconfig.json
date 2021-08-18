@@ -1,14 +1,19 @@
 {
-  "extends": "@tsconfig/node16/tsconfig.json",
+  //"extends": "@tsconfig/node16/tsconfig.json",
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"],
   "types": "node",
   "compilerOptions": {
-      "alwaysStrict": true,
-      "module": "esnext",
-      "target": "esnext",
-      "moduleResolution": "node",
-      "sourceMap": true,
-      "outDir": "build"
+    "alwaysStrict": true,
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "build",
+    // following is from @tsconfig/node16
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   }
 }
