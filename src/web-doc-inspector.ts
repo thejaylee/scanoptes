@@ -1,8 +1,7 @@
-import fs from 'fs';
 import { Cheerio, Node } from 'cheerio';
 
 import log from './log.js';
-import { NodeInspectorDefinition, Pojo } from './types.js';
+import { NodeInspectorDefinition } from './types.js';
 import { WebDocument } from './web-document.js';
 
 export class WebDocumentInspector {

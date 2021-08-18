@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 
 import log from './log.js';
-import { PromiseFunc, WatchDefinition, NodeInspectorDefinition } from './types.js';
+import { PromiseFunc, WatchDefinition } from './types.js';
 import { WebDocument } from './web-document.js';
 import { UrlLoader } from './url-loader.js';
-import { WebDocumentInspector, NodeInspector } from './web-doc-inspector.js';
+import { WebDocumentInspector } from './web-doc-inspector.js';
 
 export class Watcher {
 	#loader: UrlLoader;
