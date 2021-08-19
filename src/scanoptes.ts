@@ -9,7 +9,6 @@ import { NotificationMessage, WatchDefinition } from './types.js';
 import { load_json_file_sync } from './util.js';
 import { Watcher } from './watcher.js';
 
-process.on('unhandledRejection', console.log);
 
 let log_levels: LogLevel[] = [log.LEVEL.info, log.LEVEL.warn, log.LEVEL.error];
 if (argv.v || argv.vv)
@@ -24,6 +23,7 @@ log.info();
 log.warn();
 log.error();
 log.trace('CLI arguments', argv);
+process.on('unhandledRejection', log.error);
 
 const start_notice: NotificationMessage = {
 	title: "Scanoptes Watching",
