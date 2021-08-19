@@ -80,25 +80,26 @@ Page changes are watched via a watch definition file (default: watches.json) wit
 
         // various conditions to test for
         "condition": {
+            // a comparison operator to use for `operand`
+            // equals, not equals, less than, less than equals, greater than, greather than equals, includes
+            // lt, lte, gt, gte are parsed via `Number()` before comparison
+            "operator": "eq | ne | lt | lte | gt | gte | inc",
+
+            // the operand for `operator` to compare against
+            "operand": "foobar",
 
             // negate this condition
             "negated?": false,
+
+            // a string Regex to match against, along with Regex flags
+            "match?": [ "regex", "flags" ],
 
             // monitor for any change in either the html or text
             // when set to true this will ignore all other conditions
             "anyChange?": false,
 
-            // case sensitive comparisons. this only applies to `includes` when context is TEXT
+            // case sensitive comparisons. this only applies when context is TEXT
             "caseSensitive?": false,
-
-            // must include the text
-            "includes?": "Price",
-
-            // a string Regex to match against, along with Regex flags
-            "match?": [ "regex", "flags" ],
-
-            // if the Number() parsed text of the node evaluates to less than this value
-            "lessThan?": 1000.00,
         }
     }],
 

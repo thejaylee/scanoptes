@@ -18,12 +18,12 @@ export interface NodeInspectorDefinition {
 	context: "TEXT" | "HTML";
 	name?: string;
 	condition: {
+		operator: "eq" | "ne" | "lt" | "lte" | "gt" | "gte" | "inc";
+		operand: string | number;
 		negated: boolean;
+		match?: Array<string>[2];
 		anyChange?: string;
 		caseSensitive?: string;
-		includes?: string;
-		match?: Array<string>[2];
-		lessThan?: number;
 	}
 }
 

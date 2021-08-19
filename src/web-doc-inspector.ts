@@ -39,17 +39,27 @@ enum NodeInspectorContext {
 	HTML = 'html',
 };
 
+enum ComparisonOperator {
+	EQ = 'eq',
+	NE = 'ne',
+	LT = 'lt',
+	LTE = 'lte',
+	GT = 'gt',
+	GTE = 'gte',
+	INC = 'inc',
+}
+
 export class NodeInspector {
 	selector: string;
 	context: NodeInspectorContext;
 	name?: string;
 	condition: {
+		operator?: ComparisonOperator;
+		operand?: string | number;
 		negated?: boolean;
+		match?: RegExp;
 		anyChange?: boolean;
 		caseSensitive?: boolean;
-		includes?: string;
-		match?: RegExp;
-		lessThan?: number;
 	}
 	#nodeHtml?: string;
 	#nodeText?: string;
@@ -65,18 +75,18 @@ export class NodeInspector {
 
 		if (definition.name !== undefined)
 			ni.name = String(definition.name);
+		if (definition.condition.operator !== undefined)
+			ni.condition.operator = String(definition.condition.operator) as ComparisonOperator;
+		if (definition.condition.operand !== undefined)
+			ni.condition.operand = definition.condition.operand;
 		if (definition.condition.negated !== undefined)
 			ni.condition.negated = Boolean(definition.condition.negated);
+		if (definition.condition.match !== undefined)
+			ni.condition.match = new RegExp(definition.condition.match[0], definition.condition.match[1]);
 		if (definition.condition.caseSensitive !== undefined)
 			ni.condition.caseSensitive = Boolean(definition.condition.caseSensitive);
 		if (definition.condition.anyChange !== undefined)
 			ni.condition.anyChange = Boolean(definition.condition.anyChange);
-		if (definition.condition.includes !== undefined)
-			ni.condition.includes = String(definition.condition.includes);
-		if (definition.condition.match !== undefined)
-			ni.condition.match = new RegExp(definition.condition.match[0], definition.condition.match[1]);
-		if (definition.condition.lessThan !== undefined)
-			ni.condition.lessThan = Number(definition.condition.lessThan);
 
 		return ni;
 	}
@@ -90,7 +100,7 @@ export class NodeInspector {
 
 		const isNegated = Boolean(this.condition.negated);
 		let evaluatee: string;
-		let includes: string | undefined = this.condition.includes;
+		let includes: string | undefined = this.condition.operator === ComparisonOperator.INC ? String(this.condition.operand) : undefined;
 
 		let oldHtml: string | undefined = this.#nodeHtml;
 		let oldText: string | undefined = this.#nodeText;
@@ -115,6 +125,7 @@ export class NodeInspector {
 				break;
 		}
 
+		log.trace(evaluatee.replace(/[^0-9\.]/g, ''));
 		let num: number = Number(evaluatee.replace(/[^0-9\.]/g, ''));
 		log.trace(`${this.selector} evaluatee: ${evaluatee}`);
 		log.trace(`${this.selector} num: ${num}`);
@@ -123,11 +134,31 @@ export class NodeInspector {
 			includes = includes?.toLowerCase();
 		}
 
-		if (includes && !evaluatee.includes(includes))
-			return false !== isNegated;
+		if (this.condition.operand) {
+			switch (this.condition.operator) {
+				case ComparisonOperator.EQ:
+					return isNegated !== (evaluatee == this.condition.operand);
+
+				case ComparisonOperator.NE:
+					return isNegated !== (evaluatee != this.condition.operand);
+
+				case ComparisonOperator.LT:
+					return isNegated !== (num < this.condition.operand);
+
+				case ComparisonOperator.LTE:
+					return isNegated !== (num <= this.condition.operand);
+
+				case ComparisonOperator.GT:
+					return isNegated !== (num > this.condition.operand);
+
+				case ComparisonOperator.GTE:
+					return isNegated !== (num >= this.condition.operand);
+
+				case ComparisonOperator.INC:
+					return isNegated !== (includes && evaluatee.includes(includes));
+			}
+		}
 		if (this.condition.match && !evaluatee.match(this.condition.match))
-			return false !== isNegated;
-		if (this.condition.lessThan && num >= this.condition.lessThan)
 			return false !== isNegated;
 
 		return true !== isNegated;
