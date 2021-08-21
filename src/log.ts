@@ -18,21 +18,22 @@ const LogLevelColors: Record<LogLevel, ChalkFunction> = {
 }
 
 type LogFunc = (...args: any[]) => void;
-type LogOutputFunc = (out: string) => void;
+type LogOutputFunc = (out: string, ...args: any[]) => void;
 
 export class Logger {
 	static default: Logger;
 
+	#levels: LogLevel[];
 	outputter: LogOutputFunc;
-	levels: LogLevel[];
 
 	constructor(outputter: LogOutputFunc, levels?: LogLevel[]) {
 		this.outputter = outputter;
+		this.#levels = [];
 		this.levels = levels || [];
 	}
 
-	setLevels(levels: LogLevel[]): void {
-		this.levels = levels;
+	set levels(levels: LogLevel[]) {
+		this.#levels = levels;
 		let k: keyof typeof LogLevel;
 		for (k in LogLevel) {
 			const level: LogLevel = LogLevel[k];
@@ -44,9 +45,13 @@ export class Logger {
 		}
 	}
 
+	get levels(): LogLevel[] {
+		return this.#levels;
+	}
+
 	_log(...args: any[]): void {
 		const now = new Date();
-		console.log(`[${date.format(now, 'HH:mm:ss.S')}]`, ...args);
+		this.outputter(`[${date.format(now, 'HH:mm:ss.S')}]`, ...args);
 	}
 
 	_nop(..._: any[]): void {}

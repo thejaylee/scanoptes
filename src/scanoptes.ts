@@ -15,7 +15,7 @@ if (argv.v || argv.vv)
 	log_levels.push(LogLevel.debug);
 if (argv.vv)
 	log_levels.push(LogLevel.trace);
-log.setLevels(log_levels);
+log.levels = log_levels;
 
 log.trace();
 log.debug();
