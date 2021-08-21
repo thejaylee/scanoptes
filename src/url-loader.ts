@@ -1,7 +1,7 @@
 import https from 'https';
 import http from 'http';
 
-import log from './log.js';
+import { consoleLogger as log } from './log.js';
 import { Pojo, PromiseFunc } from './types.js';
 
 export class UrlLoader {

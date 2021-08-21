@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import log from './log.js';
+import { consoleLogger as log } from './log.js';
 import { PromiseFunc, WatchDefinition } from './types.js';
 import { WebDocument } from './web-document.js';
 import { UrlLoader } from './url-loader.js';

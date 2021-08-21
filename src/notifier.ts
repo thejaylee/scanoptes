@@ -3,7 +3,7 @@ import http from 'http';
 
 import notifier from 'node-notifier';
 
-import log from './log.js';
+import { consoleLogger as log } from './log.js';
 import { NotificationMessage } from './types.js';
 import { open_url } from './util.js';
 import { Cryptor } from './crypto.js';

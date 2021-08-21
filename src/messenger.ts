@@ -1,6 +1,6 @@
 import http, { IncomingMessage, ServerResponse } from 'http';
 
-import log from './log.js';
+import { consoleLogger as log } from './log.js';
 import { Base64EncryptedMessage, Cryptor } from './crypto.js';
 import { JsonObj, NotificationMessage, TypeValidator } from './types.js';
 

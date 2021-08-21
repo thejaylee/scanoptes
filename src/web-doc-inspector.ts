@@ -1,6 +1,6 @@
 import { Cheerio, Node } from 'cheerio';
 
-import log from './log.js';
+import { consoleLogger as log } from './log.js';
 import { NodeInspectorDefinition } from './types.js';
 import { WebDocument } from './web-document.js';
 

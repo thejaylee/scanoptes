@@ -9,7 +9,6 @@ export enum LogLevel {
 	warn = 'WARN',
 	error = 'ERROR'
 };
-type LogLevelKey = keyof typeof LogLevel;
 const LogLevelColors: Record<LogLevel, ChalkFunction> = {
 	[LogLevel.trace]: chalk.white,
 	[LogLevel.debug]: chalk.cyan,
@@ -18,47 +17,45 @@ const LogLevelColors: Record<LogLevel, ChalkFunction> = {
 	[LogLevel.error]: chalk.redBright,
 }
 
-namespace Printers {
-	export function log(...args: any[]): void {
+type LogFunc = (...args: any[]) => void;
+type LogOutputFunc = (out: string) => void;
+
+export class Logger {
+	static default: Logger;
+
+	outputter: LogOutputFunc;
+	levels: LogLevel[];
+
+	constructor(outputter: LogOutputFunc, levels?: LogLevel[]) {
+		this.outputter = outputter;
+		this.levels = levels || [];
+	}
+
+	setLevels(levels: LogLevel[]): void {
+		this.levels = levels;
+		let k: keyof typeof LogLevel;
+		for (k in LogLevel) {
+			const level: LogLevel = LogLevel[k];
+			if (levels.includes(level)) {
+				this[k] = this._log.bind(this, `[${LogLevelColors[level](level)}]`);
+			} else {
+				this[k] = this._nop;
+			}
+		}
+	}
+
+	_log(...args: any[]): void {
 		const now = new Date();
 		console.log(`[${date.format(now, 'HH:mm:ss.S')}]`, ...args);
 	}
 
-	export function nop(...args: any[]): void {}
-}
-type PrintFunc = typeof Printers.log;
+	_nop(..._: any[]): void {}
 
-function setLevel(levels: LogLevel[]): void {
-	let k: LogLevelKey;
-	for (k in LogLevel) {
-		const level: LogLevel = LogLevel[k];
-		if (levels.includes(level)) {
-			log[k] = Printers.log.bind(null, `[${LogLevelColors[level](level)}]`);
-		} else {
-			log[k] = Printers.nop;
-		}
-	}
-};
-
-interface Log {
-	trace: PrintFunc;
-	debug: PrintFunc;
-	info:  PrintFunc;
-	warn:  PrintFunc;
-	error: PrintFunc;
-	LEVEL: typeof LogLevel;
-	setLevel: typeof setLevel;
+	trace: LogFunc = this._nop;
+	debug: LogFunc = this._nop;
+	info: LogFunc = this._nop;
+	warn: LogFunc = this._nop;
+	error: LogFunc = this._nop;
 }
 
-const log: Log = {
-	trace: Printers.nop,
-	debug: Printers.nop,
-	info: Printers.nop,
-	warn: Printers.nop,
-	error: Printers.nop,
-	LEVEL: LogLevel,
-	setLevel
-};
-setLevel([LogLevel.info , LogLevel.warn , LogLevel.error]);
-
-export default log;
+export const consoleLogger: Logger = new Logger(console.log, [LogLevel.info, LogLevel.warn, LogLevel.error]);

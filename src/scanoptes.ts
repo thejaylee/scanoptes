@@ -2,7 +2,7 @@ import fs from 'fs';
 
 import { argv } from './arguments.js';
 import { Aes256Cbc, Cryptor } from './crypto.js';
-import log, { LogLevel } from './log.js';
+import { LogLevel, consoleLogger as log } from './log.js';
 import { MessageReceiver } from './messenger.js';
 import { RetryNotifier, DesktopNotifier, HttpPostNotifier } from './notifier.js';
 import { NotificationMessage, WatchDefinition } from './types.js';
@@ -10,12 +10,12 @@ import { load_json_file_sync } from './util.js';
 import { Watcher } from './watcher.js';
 
 
-let log_levels: LogLevel[] = [log.LEVEL.info, log.LEVEL.warn, log.LEVEL.error];
+let log_levels = [LogLevel.info, LogLevel.warn, LogLevel.error];
 if (argv.v || argv.vv)
-	log_levels.push(log.LEVEL.debug);
+	log_levels.push(LogLevel.debug);
 if (argv.vv)
-	log_levels.push(log.LEVEL.trace);
-log.setLevel(log_levels);
+	log_levels.push(LogLevel.trace);
+log.setLevels(log_levels);
 
 log.trace();
 log.debug();
