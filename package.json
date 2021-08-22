@@ -25,7 +25,7 @@
 		"tsc-watch": "^4.2.9"
 	},
 	"scripts": {
-		"test": "jest",
+		"test": "jest --verbose",
 		"tsc-watch": "tsc-watch --compiler /usr/bin/tsc",
 		"build": "tsc --outDir build",
 		"watch": "npm-watch",
