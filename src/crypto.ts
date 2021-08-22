@@ -21,11 +21,6 @@ export interface ObjectCipher {
 
 export class Aes256Cbc implements BlockCipher {
 	protected static readonly ALG = 'aes-256-cbc';
-	readonly #key: Buffer;
-
-	constructor(key: Buffer) {
-		this.#key = key;
-	}
 
 	public static deriveKey(password: string): Buffer {
 		return crypto.pbkdf2Sync(password, PBKDF_SALT, PBKDF_ITERATIONS, 32, 'sha256');
@@ -35,7 +30,15 @@ export class Aes256Cbc implements BlockCipher {
 		return crypto.randomBytes(32);
 	}
 
+	readonly #key: Buffer;
+
+	constructor(key: Buffer) {
+		this.#key = key;
+	}
+
 	public encrypt(data: Buffer): [Buffer, Buffer] {
+		// aes 256 uses 16 byte (128 bit) IVs
+		// https://stackoverflow.com/questions/31132162/what-size-of-initialization-vector-needed-for-aes-256-encryption-in-java
 		const iv = crypto.randomBytes(16);
 		const cipher = crypto.createCipheriv(Aes256Cbc.ALG, this.#key, iv);
 
