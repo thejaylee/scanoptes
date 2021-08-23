@@ -23,6 +23,16 @@ describe('Cryto', () => {
 			expect(dec).toStrictEqual(plain);
 		});
 
+		test('key generation is different', () => {
+			const key1 = Aes256Cbc.generateKey();
+			const key2 = Aes256Cbc.generateKey();
+			const key3 = Aes256Cbc.generateKey();
+
+			expect(key1).not.toEqual(key2);
+			expect(key2).not.toEqual(key3);
+			expect(key1).not.toEqual(key3);
+		});
+
 		test('key derivation is a pure function', () => {
 			const key1 = Aes256Cbc.deriveKey('test password');
 			const key2 = Aes256Cbc.deriveKey('test password');
@@ -59,7 +69,7 @@ describe('Cryto', () => {
 				iv: Buffer.alloc(16, 0x88).toString('base64'),
 				enc: Buffer.from(JSON.stringify(plain)).toString('base64'),
 			}
-			
+
 			const decoded = cryptor.decrypt(msg);
 			expect(decoded).toEqual(plain);
 		});
