@@ -65,7 +65,7 @@ export class Watcher {
 			this.#isCheckOutstanding = false;
 		}
 
-		this.#document = new WebDocument(buffer);
+		this.#document = new WebDocument(buffer.toString());
 		let result: boolean = (this.statusCodes?.includes(statusCode) ?? false) && this.#inspector.inspect(this.#document);
 		log.info(`${this.name} ${result ? chalk.green('passed') : chalk.red('failed')}`);
 		if (result === true && this.#lastCheckResult !== result) {
