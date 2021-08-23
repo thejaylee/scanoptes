@@ -82,10 +82,10 @@ Page changes are watched via a watch definition file (default: watches.json) wit
         "condition": {
             // a comparison operator to use for `operand`
             // equals, not equals, less than, less than equals, greater than, greather than equals, includes
-            // lt, lte, gt, gte are parsed via `Number()` before comparison
             "operator": "eq | ne | lt | lte | gt | gte | inc",
 
-            // the operand for `operator` to compare against
+            // the right-side operand for `operator` to compare against
+            // if typeof(operand) === 'number', then the texted is parsed and converted to a number
             "operand": "foobar",
 
             // negate this condition

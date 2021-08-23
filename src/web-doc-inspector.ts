@@ -39,7 +39,7 @@ export enum NodeInspectorContext {
 	HTML = 'html',
 };
 
-enum ComparisonOperator {
+export enum ComparisonOperator {
 	EQ = 'eq',
 	NE = 'ne',
 	LT = 'lt',
@@ -61,8 +61,7 @@ export class NodeInspector {
 		anyChange?: boolean;
 		caseSensitive?: boolean;
 	}
-	#nodeHtml?: string;
-	#nodeText?: string;
+	#node?: Cheerio<Node>;
 
 	constructor(selector: string, context: NodeInspectorContext = NodeInspectorContext.TEXT) {
 		this.selector = selector;
@@ -93,82 +92,84 @@ export class NodeInspector {
 
 	public inspect(document: WebDocument): boolean {
 		log.debug(`inspecting node ${this.selector}`);
-		const $el: Cheerio<Node> | undefined = document.$(this.selector);
-		if (!$el)
+		const $node: Cheerio<Node> | undefined = document.$(this.selector);
+		if (!$node)
 			throw Error('Cheerio failed');
-		log.trace(this.selector, $el);
+		log.trace(this.selector, $node);
 
 		const isNegated = Boolean(this.condition.negated);
-		let evaluatee: string;
-		let includes: string | undefined = this.condition.operator === ComparisonOperator.INC ? String(this.condition.operand) : undefined;
+		let evaluatee: string | number;
+		let includes = this.condition.operator === ComparisonOperator.INC ? String(this.condition.operand) : undefined;
+		let operand = this.condition.operand;
 
-		let oldHtml: string | undefined = this.#nodeHtml;
-		let oldText: string | undefined = this.#nodeText;
-		this.#nodeHtml = $el.html() ?? undefined;
-		this.#nodeText = $el.text();
-		log.trace(`${this.selector} html:`, this.#nodeHtml);
-		log.trace(`${this.selector} text:`, this.#nodeText);
+		let oldHtml = this.#node?.html() || '';
+		let oldText = this.#node?.text() || '';
+		const html = $node.html() ?? '';
+		const text = $node.text();
+		this.#node = $node;
+		log.trace(`${this.selector} html:`, html);
+		log.trace(`${this.selector} text:`, text);
 
 		switch (this.context) {
 			case NodeInspectorContext.HTML:
 				if (this.condition.anyChange)
-					return isNegated !== (oldHtml !== undefined && this.#nodeHtml != oldHtml);
+					return isNegated !== (oldHtml && html != oldHtml);
 
-				evaluatee = this.#nodeHtml ?? '';
+				evaluatee = html;
 				break;
 
 			case NodeInspectorContext.TEXT:
 				if (this.condition.anyChange)
-					return isNegated !== (oldText !== undefined && this.#nodeText != oldText);
+					return isNegated !== (oldText  && text != oldText);
 
-				evaluatee = this.#nodeText;
+				evaluatee = text;
 				break;
 		}
 
-		log.trace(evaluatee.replace(/[^0-9\.]/g, ''));
-		let num: number = Number(evaluatee.replace(/[^0-9\.]/g, ''));
-		log.trace(`${this.selector} evaluatee: ${evaluatee}`);
-		log.trace(`${this.selector} num: ${num}`);
-		if (!this.condition.caseSensitive) {
-			evaluatee = evaluatee.toLowerCase();
+		if (typeof(operand) === 'number')
+			evaluatee = Number(evaluatee.replace(/[^0-9\.]/g, ''));
+		if (!this.condition.caseSensitive && typeof(operand) === 'string') {
+			operand = operand.toLowerCase();
+			evaluatee = String(evaluatee).toLowerCase();
 			includes = includes?.toLowerCase();
 		}
+		log.trace(`${this.selector} evaluatee: ${evaluatee}`);
 
-		if (this.condition.operand) {
+		if (operand) {
 			switch (this.condition.operator) {
 				case ComparisonOperator.EQ:
-					return isNegated !== (evaluatee == this.condition.operand);
+					return isNegated !== (evaluatee == operand);
 
 				case ComparisonOperator.NE:
-					return isNegated !== (evaluatee != this.condition.operand);
+					return isNegated !== (evaluatee != operand);
 
 				case ComparisonOperator.LT:
-					return isNegated !== (num < this.condition.operand);
+					return isNegated !== (evaluatee < operand);
 
 				case ComparisonOperator.LTE:
-					return isNegated !== (num <= this.condition.operand);
+					return isNegated !== (evaluatee <= operand);
 
 				case ComparisonOperator.GT:
-					return isNegated !== (num > this.condition.operand);
+					return isNegated !== (evaluatee > operand);
 
 				case ComparisonOperator.GTE:
-					return isNegated !== (num >= this.condition.operand);
+					return isNegated !== (evaluatee >= operand);
 
 				case ComparisonOperator.INC:
-					return isNegated !== (includes && evaluatee.includes(includes));
+					return isNegated !== (includes && String(evaluatee).includes(includes));
 			}
 		}
-		if (this.condition.match && !evaluatee.match(this.condition.match))
+		if (this.condition.match && !String(evaluatee).match(this.condition.match))
 			return false !== isNegated;
 
-		return true !== isNegated;
+		return ($node.length > 0) !== isNegated;
 	}
 
 	public get nodeHtml(): string | undefined {
-		return this.#nodeHtml;
+		return this.#node?.html() || undefined;
 	}
 
 	public get nodeText(): string | undefined {
-		return this.#nodeText;
+		return this.#node?.text() || undefined;
 	}
 }

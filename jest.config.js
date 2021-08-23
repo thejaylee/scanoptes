@@ -6,6 +6,12 @@ export default {
 		}
 	},
 	moduleFileExtensions: ['ts', 'js'],
+	moduleNameMapper: {
+		'^\./(.*)\.js$': [
+			'./$1.js',
+			"<rootDir>/src/$1",
+		]
+	},
 	transform: {
 		'^.+\\.(ts|tsx)$': 'ts-jest'
 	},
