@@ -34,7 +34,7 @@ export class WebDocumentInspector {
 	}
 }
 
-enum NodeInspectorContext {
+export enum NodeInspectorContext {
 	TEXT = 'text',
 	HTML = 'html',
 };
