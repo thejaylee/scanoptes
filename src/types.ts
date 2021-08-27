@@ -21,9 +21,9 @@ export interface NodeInspectorDefinition {
 		operator: "eq" | "ne" | "lt" | "lte" | "gt" | "gte" | "inc";
 		operand: string | number;
 		negated: boolean;
-		match?: Array<string>[2];
-		anyChange?: string;
-		caseSensitive?: string;
+		match?: [string, string];
+		anyChange?: boolean;
+		caseSensitive?: boolean;
 	}
 }
 

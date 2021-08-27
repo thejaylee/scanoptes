@@ -102,8 +102,8 @@ export class NodeInspector {
 		let includes = this.condition.operator === ComparisonOperator.INC ? String(this.condition.operand) : undefined;
 		let operand = this.condition.operand;
 
-		let oldHtml = this.#node?.html() || '';
-		let oldText = this.#node?.text() || '';
+		let oldHtml = this.#node?.html();
+		let oldText = this.#node?.text();
 		const html = $node.html() ?? '';
 		const text = $node.text();
 		this.#node = $node;
@@ -113,14 +113,14 @@ export class NodeInspector {
 		switch (this.context) {
 			case NodeInspectorContext.HTML:
 				if (this.condition.anyChange)
-					return isNegated !== (oldHtml && html != oldHtml);
+					return isNegated !== Boolean(oldHtml && html != oldHtml);
 
 				evaluatee = html;
 				break;
 
 			case NodeInspectorContext.TEXT:
 				if (this.condition.anyChange)
-					return isNegated !== (oldText  && text != oldText);
+					return isNegated !== Boolean(oldText && text != oldText);
 
 				evaluatee = text;
 				break;

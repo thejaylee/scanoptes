@@ -98,7 +98,7 @@ Page changes are watched via a watch definition file (default: watches.json) wit
             // when set to true this will ignore all other conditions
             "anyChange?": false,
 
-            // case sensitive comparisons. this only applies when context is TEXT
+            // case sensitive comparisons
             "caseSensitive?": false,
         }
     }],
