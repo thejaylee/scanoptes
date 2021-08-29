@@ -4,13 +4,20 @@ import http from 'http';
 import { consoleLogger as log } from './log.js';
 import { Pojo, PromiseFunc } from './types.js';
 
+export class NotHttpUrlError extends Error {
+	constructor(...params: any[]) {
+		super(...params);
+		this.name = 'NotHttpUrlError';
+	}
+}
+
 export class UrlLoader {
 	#url: string;
 	#headers: Pojo;
 
 	constructor(url: string) {
 		if (!url.match(/^https?:\/\//i))
-			throw new Error(`url "${url}" must begin with http:// or https://`);
+			throw new NotHttpUrlError(`url "${url}" must begin with http:// or https://`);
 
 		this.#url = url;
 		this.#headers = {
@@ -29,6 +36,8 @@ export class UrlLoader {
 			'Accept-Encoding': 'identity',
 		};
 	}
+
+	get url() { return this.#url; }
 
 	public load(): Promise<[number, Buffer]> {
 		return new Promise((resolve: PromiseFunc, reject: PromiseFunc): void => {
