@@ -1,5 +1,11 @@
 import { WebDocument } from '../../src/web-document';
-import { WebDocumentInspector, NodeInspector, NodeInspectorContext, ComparisonOperator } from '../../src/inspector';
+import {
+	ComparisonOperator,
+	NodeInspector,
+	NodeInspectorContext,
+	NoNodeInspectorError,
+	WebDocumentInspector,
+} from '../../src/inspector';
 import { NodeInspectorDefinition } from '../../src/types';
 
 
@@ -17,6 +23,9 @@ const TEST_MARKUP = "\
 </html>";
 
 describe('Inspector', () => {
+	const ID_SELECTOR = 'div#test-id';
+	const NUM_SELECTOR = 'div#numeric';
+
 	let doc: WebDocument;
 
 	beforeAll(() => {
@@ -24,10 +33,6 @@ describe('Inspector', () => {
 	});
 
 	describe('NodeInspector', () => {
-		const ID_SELECTOR = 'div#test-id';
-		const MULTI_SELECTOR = 'div.multi';
-		const NUM_SELECTOR = 'div#numeric';
-
 		describe('selector only', () => {
 			test('selector with no conditions passes if selector exists', () => {
 				const ni = new NodeInspector(ID_SELECTOR, NodeInspectorContext.TEXT);
@@ -43,7 +48,15 @@ describe('Inspector', () => {
 				expect(ni.inspect(doc)).toStrictEqual(false);
 			});
 
-			test('selector with negated no conditions passes if selector does not exist', () => {
+			test('selector with no conditions fails if selector does not exist, even with conditions', () => {
+				const ni = new NodeInspector('#null', NodeInspectorContext.TEXT);
+				ni.condition.match = RegExp('');
+				ni.name = 'test inspector';
+
+				expect(ni.inspect(doc)).toStrictEqual(false);
+			});
+
+			test('selector with negated conditions passes if selector does not exist', () => {
 				const ni = new NodeInspector('#null', NodeInspectorContext.TEXT);
 				ni.name = 'test inspector';
 				ni.condition.negated = true
@@ -358,7 +371,7 @@ describe('Inspector', () => {
 					context: 'TEXT',
 					name: 'test',
 					condition: {
-						operator: "eq",
+						operator: 'eq',
 						operand: 'foobar',
 						negated: true,
 						match: ['^asdf$', 'i'],
@@ -375,6 +388,283 @@ describe('Inspector', () => {
 				expect(ni.condition.negated).toEqual(true);
 				expect(ni.condition.match).toEqual(RegExp('^asdf$', 'i'));
 				expect(ni.condition.caseSensitive).toEqual(false);
+			});
+		});
+	});
+
+	describe('WebDocumentInspector', () => {
+		describe('inspect()', () => {
+			test('without any NodeInspectors throws NoNodeInspectorError', () => {
+				const doc = new WebDocument(TEST_MARKUP);
+				const wdi = new WebDocumentInspector();
+
+				expect(() => {
+					wdi.inspect(doc);
+				}).toThrow(NoNodeInspectorError);
+			});
+
+			describe('matching all', () => {
+				test('passes when ALL inspectors match', () => {
+					const all: NodeInspectorDefinition[] = [
+						{
+							selector: ID_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 'foo bar',
+							}
+						},{
+							selector: NUM_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 123456.789,
+							}
+						},
+					];
+					const wdi = new WebDocumentInspector();
+					wdi.loadNodeInspectorDefinitions({all});
+
+					expect(wdi.inspect(doc)).toStrictEqual(true);
+				});
+
+				test('fails when not ALL inspectors match', () => {
+					const all: NodeInspectorDefinition[] = [
+						{
+							selector: ID_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 'does not exist',
+							}
+						},{
+							selector: NUM_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 123456.789,
+							}
+						},
+					];
+					const wdi = new WebDocumentInspector();
+					wdi.loadNodeInspectorDefinitions({all});
+
+					expect(wdi.inspect(doc)).toStrictEqual(false);
+				});
+
+				test('fails when a selector is not found', () => {
+					const all: NodeInspectorDefinition[] = [
+						{
+							selector: '#null',
+							context: 'TEXT',
+							name: 'test',
+							condition: {}
+						},{
+							selector: NUM_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 123456.789,
+							}
+						},
+					];
+					const wdi = new WebDocumentInspector();
+					wdi.loadNodeInspectorDefinitions({all});
+
+					expect(wdi.inspect(doc)).toStrictEqual(false);
+				});
+			});
+
+			describe('matching any', () => {
+				test('passes when not all inspectors match', () => {
+					const any: NodeInspectorDefinition[] = [
+						{
+							selector: ID_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 'will not match',
+							}
+						},{
+							selector: NUM_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 123456.789,
+							}
+						},
+					];
+					const wdi = new WebDocumentInspector();
+					wdi.loadNodeInspectorDefinitions({any});
+
+					expect(wdi.inspect(doc)).toStrictEqual(true);
+				});
+
+				test('passes when an inspector matches and one not found', () => {
+					const any: NodeInspectorDefinition[] = [
+						{
+							selector: ID_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 'foo bar',
+							}
+						},{
+							selector: '#null',
+							context: 'TEXT',
+							name: 'test',
+							condition: {}
+						},
+					];
+					const wdi = new WebDocumentInspector();
+					wdi.loadNodeInspectorDefinitions({any});
+
+					expect(wdi.inspect(doc)).toStrictEqual(true);
+				});
+
+				test('fails when none match', () => {
+					const any: NodeInspectorDefinition[] = [
+						{
+							selector: '#null',
+							context: 'TEXT',
+							name: 'test',
+							condition: {}
+						},{
+							selector: ID_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 'will not match',
+							}
+						},
+					];
+					const wdi = new WebDocumentInspector();
+					wdi.loadNodeInspectorDefinitions({any});
+
+					expect(wdi.inspect(doc)).toStrictEqual(false);
+				});
+			});
+
+			describe('matching any and all', () => {
+				test('passes when any and all pass', () => {
+					const all: NodeInspectorDefinition[] = [
+						{
+							selector: ID_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 'foo bar',
+							}
+						},{
+							selector: NUM_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 123456.789,
+							}
+						},
+					];
+					const any: NodeInspectorDefinition[] = [
+						{
+							selector: ID_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 'foo bar',
+							}
+						},{
+							selector: '#null',
+							context: 'TEXT',
+							name: 'test',
+							condition: {}
+						},
+					];
+					const wdi = new WebDocumentInspector();
+					wdi.loadNodeInspectorDefinitions({all, any});
+
+					expect(wdi.inspect(doc)).toStrictEqual(true);
+				});
+
+				test('fails when any passes but all fails', () => {
+					const all: NodeInspectorDefinition[] = [
+						{
+							selector: ID_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 'will not exist',
+							}
+						}
+					];
+					const any: NodeInspectorDefinition[] = [
+						{
+							selector: ID_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 'foo bar',
+							}
+						},{
+							selector: '#null',
+							context: 'TEXT',
+							name: 'test',
+							condition: {}
+						},
+					];
+					const wdi = new WebDocumentInspector();
+					wdi.loadNodeInspectorDefinitions({all, any});
+
+					expect(wdi.inspect(doc)).toStrictEqual(false);
+				});
+
+				test('fails when all passes but any fails', () => {
+					const all: NodeInspectorDefinition[] = [
+						{
+							selector: ID_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 'foo bar',
+							}
+						},{
+							selector: NUM_SELECTOR,
+							context: 'TEXT',
+							name: 'test',
+							condition: {
+								operator: 'eq',
+								operand: 123456.789,
+							}
+						},
+
+					];
+					const any: NodeInspectorDefinition[] = [
+						{
+							selector: '#null',
+							context: 'TEXT',
+							name: 'test',
+							condition: {}
+						}
+					];
+					const wdi = new WebDocumentInspector();
+					wdi.loadNodeInspectorDefinitions({all, any});
+
+					expect(wdi.inspect(doc)).toStrictEqual(false);
+				});
 			});
 		});
 	});

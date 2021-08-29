@@ -4,6 +4,14 @@ import { consoleLogger as log } from './log.js';
 import { NodeInspectorDefinition } from './types.js';
 import { WebDocument } from './web-document.js';
 
+export class NoNodeInspectorError extends Error {
+	constructor(...params: any[]) {
+		super(...params);
+		this.name = 'NoNodeInspectorError';
+		this.message = 'No NodeInspectors set for WebDocumentInspector';
+	}
+}
+
 export class WebDocumentInspector {
 	all: NodeInspector[];
 	any: NodeInspector[];
@@ -13,24 +21,38 @@ export class WebDocumentInspector {
 		this.any = [];
 	}
 
-	public loadNodeInspectorDefinitions(all?: NodeInspectorDefinition[], any?: NodeInspectorDefinition[]): void {
+	public loadNodeInspectorDefinitions(
+		{all, any}: {all?: NodeInspectorDefinition[], any?: NodeInspectorDefinition[]}
+	): void {
 		for (let d of all ?? [])
 			this.all.push(NodeInspector.fromDefinition(d));
 		for (let d of any ?? [])
 			this.any.push(NodeInspector.fromDefinition(d));
 	}
 
-	public inspect(document: WebDocument): boolean {
+	public inspect(doc: WebDocument): boolean {
+		if (this.all.length + this.any.length <= 0)
+			throw new NoNodeInspectorError();
+
+		return this.anyMatch(doc) && this.allMatch(doc);
+	}
+	
+	private allMatch(doc: WebDocument): boolean {
 		for (let ni of this.all ?? []) {
-			return ni.inspect(document);
+			if (!ni.inspect(doc))
+				return false;
 		}
-
-		for (let ni of this.any ?? []) {
-			if (ni.inspect(document))
-				break;
-		}
-
+		
 		return true;
+	}
+
+	private anyMatch(doc: WebDocument): boolean {
+		for (let ni of this.any ?? []) {
+			if (ni.inspect(doc))
+				return true;
+		}
+
+		return this.any.length <= 0;
 	}
 }
 
@@ -98,6 +120,9 @@ export class NodeInspector {
 		log.trace(this.selector, $node);
 
 		const isNegated = Boolean(this.condition.negated);
+		if ($node.length <= 0)
+			return isNegated !== false;
+
 		let evaluatee: string | number;
 		let includes = this.condition.operator === ComparisonOperator.INC ? String(this.condition.operand) : undefined;
 		let operand = this.condition.operand;
@@ -162,7 +187,7 @@ export class NodeInspector {
 		if (this.condition.match && !String(evaluatee).match(this.condition.match))
 			return false !== isNegated;
 
-		return ($node.length > 0) !== isNegated;
+		return isNegated !== true;
 	}
 
 	public get nodeHtml(): string | undefined {

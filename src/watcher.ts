@@ -41,7 +41,7 @@ export class Watcher {
 		watcher.description = definition.description;
 		watcher.statusCodes = definition.statusCodes;
 		watcher.#loader.headers = definition.headers ?? {};
-		watcher.#inspector.loadNodeInspectorDefinitions(definition.all, definition.any);
+		watcher.#inspector.loadNodeInspectorDefinitions({all: definition.all, any: definition.any});
 		return watcher;
 	}
 
