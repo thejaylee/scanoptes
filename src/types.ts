@@ -35,8 +35,8 @@ export interface NotificationMessage {
 
 export class TypeValidator {
 	public static conformsTo(obj: object, definition: {[k: string]: string}): boolean {
-		return Object.entries(obj).every(([key, _]): boolean => {
-			return key in definition && typeof(key) == definition[key];
+		return Object.entries(obj).every(([key, value]): boolean => {
+			return key in definition && typeof(value) == definition[key];
 		})
 	}
 
