@@ -36,13 +36,13 @@ export class WebDocumentInspector {
 
 		return this.anyMatch(doc) && this.allMatch(doc);
 	}
-	
+
 	private allMatch(doc: WebDocument): boolean {
 		for (let ni of this.all ?? []) {
 			if (!ni.inspect(doc))
 				return false;
 		}
-		
+
 		return true;
 	}
 
@@ -96,17 +96,17 @@ export class NodeInspector {
 
 		if (definition.name !== undefined)
 			ni.name = String(definition.name);
-		if (definition.condition.operator !== undefined)
+		if (definition.condition?.operator !== undefined)
 			ni.condition.operator = String(definition.condition.operator) as ComparisonOperator;
-		if (definition.condition.operand !== undefined)
+		if (definition.condition?.operand !== undefined)
 			ni.condition.operand = definition.condition.operand;
-		if (definition.condition.negated !== undefined)
+		if (definition.condition?.negated !== undefined)
 			ni.condition.negated = Boolean(definition.condition.negated);
-		if (definition.condition.match !== undefined)
+		if (definition.condition?.match !== undefined)
 			ni.condition.match = new RegExp(definition.condition.match[0], definition.condition.match[1]);
-		if (definition.condition.caseSensitive !== undefined)
+		if (definition.condition?.caseSensitive !== undefined)
 			ni.condition.caseSensitive = Boolean(definition.condition.caseSensitive);
-		if (definition.condition.anyChange !== undefined)
+		if (definition.condition?.anyChange !== undefined)
 			ni.condition.anyChange = Boolean(definition.condition.anyChange);
 
 		return ni;
